@@ -10,8 +10,10 @@ namespace Comlines.Commlines
         [HarmonyPostfix]
         public static void OnUpdatePostfix(ConnectionGraph __instance)
         {
-            var nodes = Traverse.Create(__instance).Field("_allNodes").GetValue() as List<ConnectionGraphNode>;
-            CommlineManager.UpdateConnections(__instance, nodes);
+            var traverse = Traverse.Create(__instance);
+            var nodes = traverse.Field("_allNodes").GetValue() as List<ConnectionGraphNode>;
+            var sourceIndex =(int)traverse.Field("_prevSourceIndex").GetValue();
+            CommlineManager.UpdateConnections(nodes, nodes[sourceIndex]);
         }
     }
 }

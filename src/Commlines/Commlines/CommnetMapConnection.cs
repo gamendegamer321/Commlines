@@ -19,17 +19,14 @@ namespace Comlines.Commlines
 
         private LineRenderer renderer;
 
-        public void Awake()
-        {
-            logger.LogInfo($"Created a new logger on: {transform.name}");
-        }
-
         public void Update()
         {
             if (renderer == null)
             {
                 return;
             }
+
+            CheckValidity();
 
             var positions = new List<Vector3>();
             var localPos = sourceData.transform.position;
@@ -67,12 +64,38 @@ namespace Comlines.Commlines
             renderer = gameObject.AddComponent<LineRenderer>();
             renderer.material = MaterialManager.material;
             renderer.widthMultiplier = WIDTH;
+
+            logger.LogInfo($"Setting up: {source} with object {sourceData.AssociatedMapItem.SimGUID}");
         }
 
         public void Add(Map3DFocusItem targetNode)
         {
             targets.Add(targetNode.AssociatedMapItem.SimGUID);
             targetData.Add(targetNode);
+        }
+
+        private void CheckValidity()
+        {
+            List<IGGuid> toRemove = new List<IGGuid>();
+
+            foreach (var target in targets)
+            {
+                if (!CommlineManager.IsStillValid(source, target))
+                {
+                    toRemove.Add(target);
+                }
+            }
+
+            foreach (var target in toRemove)
+            {
+                targets.Remove(target);
+            }
+
+            if (targets.Count == 0)
+            {
+                Destroy(renderer);
+                Destroy(this);
+            }
         }
     }
 }

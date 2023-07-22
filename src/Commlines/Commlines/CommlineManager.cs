@@ -3,6 +3,7 @@ using KSP.Game;
 using KSP.Map;
 using KSP.Sim;
 using KSP.Sim.impl;
+using Unity.Mathematics;
 using UnityEngine.UIElements.Collections;
 
 namespace Comlines.Commlines
@@ -21,40 +22,32 @@ namespace Comlines.Commlines
 
         private static GameInstance Game => GameManager.Instance.Game;
 
-        public static void UpdateConnections(ConnectionGraph graph, List<ConnectionGraphNode> nodes)
+        public static void UpdateConnections(List<ConnectionGraphNode> nodes, ConnectionGraphNode sourceNode)
         {
-            if (!graph.HasResult)
+            if (!EventListener.isInMapView)
             {
                 return;
             }
 
             List<CommnetLink> currentLinks = new List<CommnetLink>();
+            sourceGuid = sourceNode.Owner;
 
-            foreach (var node in nodes)
+            for (int i = 0; i < nodes.Count; i++)
             {
-                // If the node is not connected, there will not be a path
-                List<ConnectionGraphNode> path = new List<ConnectionGraphNode>();
+                var currentNode = nodes[i];
+                var maxDistance1 = currentNode.MaxRange * currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
 
-                if (!graph.TryGetPathFromSourceNode(node, ref path))
+                // We start one higher than the previous as this is the first node to check it against
+                for (int j = i + 1; j < nodes.Count; j++)
                 {
-                    // If no path was found, continue to the next node
-                    continue;
-                }
+                    var nextNode = nodes[j];
 
-                // Path to the source node itself
-                if (path.Count == 1)
-                {
-                    sourceGuid = path[0].Owner;
-                    continue;
-                }
+                    if (!IsValidConnection(currentNode, nextNode, maxDistance1)) // No need to check anything if they are not connected
+                    {
+                        continue;
+                    }
 
-                // We start at 1, so we can get the current node and the previous node when going over the path
-                for (int i = 1; i < path.Count; i ++)
-                {
-                    var previousNode = path[i - 1];
-                    var currentNode = path[i];
-
-                    var link = GetLink(previousNode, currentNode);
+                    var link = GetLink(currentNode.Owner, nextNode.Owner);
 
                     if (link != null) // If the link already exists, no need to create a new link
                     {
@@ -66,7 +59,7 @@ namespace Comlines.Commlines
                         continue;
                     }
 
-                    link = new CommnetLink(previousNode, currentNode);
+                    link = new CommnetLink(currentNode, nextNode);
                     currentLinks.Add(link);
                     links.Add(link);
 
@@ -118,7 +111,6 @@ namespace Comlines.Commlines
                 // If we already have a map connection component on this source, we can simply add this line to that map connection component
                 if (mapConnection != null)
                 {
-                    logger.LogInfo($"Adding {guid2} to {mapConnection.source}");
                     mapConnection.Add(mapLookup.Get(guid2));
                     continue;
                 }
@@ -131,24 +123,41 @@ namespace Comlines.Commlines
             }
         }
 
+        public static bool IsStillValid(IGGuid comm1, IGGuid comm2)
+        {
+            return GetLink(comm1, comm2) != null;
+        }
+
         public static void Destroyed(CommnetMapConnection connection)
         {
             connections.Remove(connection);
         }
 
-        private static CommnetLink GetLink(ConnectionGraphNode comm1, ConnectionGraphNode comm2)
+        private static CommnetLink GetLink(IGGuid comm1, IGGuid comm2)
         {
-            foreach (var link  in links)
+            foreach (var link in links)
             {
-                if (link.Node1.Owner == comm1.Owner && link.Node2.Owner == comm2.Owner)
+                if (link.Node1.Owner == comm1 && link.Node2.Owner == comm2)
                 {
                     return link;
                 }
 
-                if (link.Node1.Owner == comm2.Owner && link.Node2.Owner == comm1.Owner)
+                if (link.Node1.Owner == comm2 && link.Node2.Owner == comm1)
                 {
                     return link;
                 }
+            }
+
+
+            // If its the ksc also check if it still has a valid connection to the source node
+            if (comm1 == kscGuid)
+            {
+                return GetLink(sourceGuid, comm2);
+            }
+
+            if (comm2 == kscGuid)
+            {
+                return GetLink(comm1, sourceGuid);
             }
 
             return null;
@@ -221,6 +230,15 @@ namespace Comlines.Commlines
                     kscGuid = obj.AssociatedMapItem.SimGUID;
                 }
             }
+        }
+
+        private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance1)
+        {
+            var distance = math.distancesq(node1.Position, node2.Position);
+
+            logger.LogInfo($"{node1.Owner} {node2.Owner} Distance: {distance}, range 1 {maxDistance1}, range 2 {node2.MaxRange * node2.MaxRange}, output {distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange}");
+
+            return distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange;
         }
     }
 }
