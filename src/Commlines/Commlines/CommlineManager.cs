@@ -194,9 +194,6 @@ namespace Comlines.Commlines
                 if (!stillInUse.Contains(link))
                 {
                     toRemove.Add(link);
-
-                    var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
-                    GetMapConnection(guid1).Remove(mapLookup.Get(link.Node2.Owner));
                 }
             }
 

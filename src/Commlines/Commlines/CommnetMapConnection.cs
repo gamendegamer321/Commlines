@@ -74,11 +74,5 @@ namespace Comlines.Commlines
             targets.Add(targetNode.AssociatedMapItem.SimGUID);
             targetData.Add(targetNode);
         }
-
-        public void Remove(Map3DFocusItem targetNode)
-        {
-            targets.Remove(targetNode.AssociatedMapItem.SimGUID);
-            targetData.Remove(targetNode);
-        }
     }
 }
