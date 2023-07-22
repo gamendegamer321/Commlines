@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <!-- Mod configuration -->
     <PropertyGroup Label="Mod configuration">
-        <Product Label="Name of the mod">Comlines</Product>
+        <Product Label="Name of the mod">Commlines</Product>
         <Authors Label="Author(s) of the mod">gamendegamer321</Authors>
-        <Description Label="Description of the mod">Add the comlines from KSP 1 to KSP 2</Description>
+        <Description Label="Description of the mod">Add the commlines from KSP 1 to KSP 2</Description>
         <RepositoryType Label="Type of source repository (git/svn)">git</RepositoryType>
         <RepositoryUrl Label="Source repository URL"></RepositoryUrl>
         <Version Label="Version of the mod">1.0.0</Version>
