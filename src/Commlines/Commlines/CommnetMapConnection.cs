@@ -19,11 +19,6 @@ namespace Comlines.Commlines
 
         private LineRenderer renderer;
 
-        public void Awake()
-        {
-            logger.LogInfo($"Created a new logger on: {transform.name}");
-        }
-
         public void Update()
         {
             if (renderer == null)

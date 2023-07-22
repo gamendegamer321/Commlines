@@ -118,7 +118,6 @@ namespace Comlines.Commlines
                 // If we already have a map connection component on this source, we can simply add this line to that map connection component
                 if (mapConnection != null)
                 {
-                    logger.LogInfo($"Adding {guid2} to {mapConnection.source}");
                     mapConnection.Add(mapLookup.Get(guid2));
                     continue;
                 }
