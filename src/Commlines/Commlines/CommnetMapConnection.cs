@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using Commlines.Commlines;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
@@ -64,7 +65,10 @@ namespace Comlines.Commlines
 
             // Create the line renderer
             renderer = gameObject.AddComponent<LineRenderer>();
+            renderer.material = MaterialManager.material;
             renderer.widthMultiplier = WIDTH;
+
+            logger.LogInfo(MaterialManager.material.shader.name);
         }
 
         public void Add(Map3DFocusItem targetNode)
