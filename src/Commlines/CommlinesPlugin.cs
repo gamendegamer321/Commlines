@@ -8,7 +8,7 @@ namespace Comlines;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
-public class ComlinesPlugin : BaseSpaceWarpPlugin
+public class CommlinesPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
     // ReSharper disable UnusedMember.Global
@@ -19,7 +19,7 @@ public class ComlinesPlugin : BaseSpaceWarpPlugin
 
     // Singleton instance of the plugin class
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public static ComlinesPlugin Instance { get; set; }
+    public static CommlinesPlugin Instance { get; set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -35,6 +35,6 @@ public class ComlinesPlugin : BaseSpaceWarpPlugin
         // Start the event listener
         EventListener.RegisterEvents();
 
-        Logger.LogInfo($"Initialized comm lines");
+        Logger.LogInfo($"Initialized commlines");
     }
 }
