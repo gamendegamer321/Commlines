@@ -67,8 +67,6 @@ namespace Comlines.Commlines
             renderer = gameObject.AddComponent<LineRenderer>();
             renderer.material = MaterialManager.material;
             renderer.widthMultiplier = WIDTH;
-
-            logger.LogInfo(MaterialManager.material.shader.name);
         }
 
         public void Add(Map3DFocusItem targetNode)
