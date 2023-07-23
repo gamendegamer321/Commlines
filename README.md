@@ -13,9 +13,9 @@ If the green lines become too much, you can enable path mode in the settings, wh
 Below I have added a few images of how the lines look. I have added images with pathmode off and images of the same scenario with pathmode on.
 
 ### Pathmode = off
-![image](https://github.com/gamendegamer321/Commlines/assets/74590966/dc4f7d90-7318-4fec-9149-087612281020)
-![image](https://github.com/gamendegamer321/Commlines/assets/74590966/8b770706-b1f7-4c97-ba1e-afb3984fb05d)
+![image](https://github.com/gamendegamer321/Commlines/assets/74590966/741801d9-59c8-4acf-b759-587172343d41)
+![image](https://github.com/gamendegamer321/Commlines/assets/74590966/a7a83b2b-310e-435c-b918-90bd53c6249c)
 
 ### Pathmode = on
-![image](https://github.com/gamendegamer321/Commlines/assets/74590966/60e8ba0a-c7a6-4e5f-b328-c53793f12f1d)
-![image](https://github.com/gamendegamer321/Commlines/assets/74590966/1d8d9e6a-839c-4196-b99d-c783eea1a617)
+![image](https://github.com/gamendegamer321/Commlines/assets/74590966/9362865f-c45b-4c7b-9d33-74689d884d6c)
+![image](https://github.com/gamendegamer321/Commlines/assets/74590966/f65d884a-c834-48ec-b446-6703504cc2df)
