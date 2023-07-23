@@ -10,10 +10,10 @@ namespace Comlines.Commlines
         private const float WIDTH = 0.03f;
 
         public IGGuid source { get; private set; }
-        public List<IGGuid> targets { get; private set; } = new List<IGGuid>();
+        public readonly List<IGGuid> targets = new List<IGGuid>();
 
-        public Map3DFocusItem sourceData;
-        public List<Map3DFocusItem> targetData = new List<Map3DFocusItem>();
+        private Map3DFocusItem sourceData;
+        private readonly List<Map3DFocusItem> targetData = new List<Map3DFocusItem>();
 
         private LineRenderer renderer;
 
