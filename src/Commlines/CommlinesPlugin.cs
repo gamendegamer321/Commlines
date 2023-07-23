@@ -7,15 +7,15 @@ using SpaceWarp.API.Mods;
 
 namespace Comlines;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInPlugin("com.gamendegamer.commlines", "Commlines", "1.0.0")]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
 public class CommlinesPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
     // ReSharper disable UnusedMember.Global
-    public const string ModGuid = MyPluginInfo.PLUGIN_GUID;
-    public const string ModName = MyPluginInfo.PLUGIN_NAME;
-    public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
+    public const string ModGuid = "com.gamendegamer.commlines";
+    public const string ModName = "Commlines";
+    public const string ModVer = "1.0.0";
     // ReSharper restore UnusedMember.Global
 
     // Singleton instance of the plugin class
