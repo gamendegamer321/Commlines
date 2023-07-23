@@ -84,7 +84,6 @@ namespace Comlines.Commlines
 
             if (targets.Count == 0)
             {
-                Destroy(renderer);
                 Destroy(this);
             }
         }
