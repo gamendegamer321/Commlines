@@ -8,8 +8,7 @@ namespace Comlines.Commlines
 {
     public class CommnetMapConnection : MonoBehaviour
     {
-        private const float WIDTH = 0.05f;
-        private static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("Commnet Connection");
+        private const float WIDTH = 0.03f;
 
         public IGGuid source { get; private set; }
         public List<IGGuid> targets { get; private set; } = new List<IGGuid>();
@@ -62,8 +61,6 @@ namespace Comlines.Commlines
             renderer = gameObject.AddComponent<LineRenderer>();
             renderer.material = MaterialManager.material;
             renderer.widthMultiplier = WIDTH;
-
-            logger.LogInfo($"Setting up: {source} with object {sourceData.AssociatedMapItem.SimGUID}");
         }
 
         public void Add(Map3DFocusItem targetNode)

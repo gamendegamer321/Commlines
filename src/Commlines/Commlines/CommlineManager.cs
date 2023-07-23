@@ -211,7 +211,10 @@ namespace Comlines.Commlines
                     toRemove.Add(link);
 
                     // Remove the line if one is already created
-                    GetMapConnection(link.Node1.Owner)?.Remove(mapLookup.Get(link.Node2.Owner));
+                    var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
+                    var guid2 = link.Node2.Owner;
+                    
+                    GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
                 }
             }
 
@@ -244,8 +247,6 @@ namespace Comlines.Commlines
         private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance1)
         {
             var distance = math.distancesq(node1.Position, node2.Position);
-
-            logger.LogInfo($"{node1.Owner} {node2.Owner} Distance: {distance}, range 1 {maxDistance1}, range 2 {node2.MaxRange * node2.MaxRange}, output {distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange}");
 
             return distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange;
         }
