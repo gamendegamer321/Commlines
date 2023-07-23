@@ -134,11 +134,6 @@ namespace Comlines.Commlines
             }
         }
 
-        public static bool IsStillValid(IGGuid comm1, IGGuid comm2)
-        {
-            return GetLink(comm1, comm2) != null;
-        }
-
         public static void Destroyed(CommnetMapConnection connection)
         {
             connections.Remove(connection);
