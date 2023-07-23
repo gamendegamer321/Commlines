@@ -1,8 +1,11 @@
 ﻿using BepInEx.Logging;
+using Commlines.Commlines;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim;
 using KSP.Sim.impl;
+using Unity.Mathematics;
+using UnityEngine.Networking.Types;
 using UnityEngine.UIElements.Collections;
 
 namespace Comlines.Commlines
@@ -11,77 +14,18 @@ namespace Comlines.Commlines
     {
         private static ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
 
-        private readonly static List<CommnetLink> links = new List<CommnetLink>();
         private readonly static List<CommnetMapConnection> connections = new List<CommnetMapConnection>();
         private readonly static Dictionary<IGGuid, Map3DFocusItem> mapLookup = new Dictionary<IGGuid, Map3DFocusItem>();
         private static bool changed;
 
-        private static IGGuid sourceGuid;
-        private static IGGuid kscGuid;
+        public static IGGuid kscGuid { get; private set; }
 
         private static GameInstance Game => GameManager.Instance.Game;
 
-        public static void UpdateConnections(ConnectionGraph graph, List<ConnectionGraphNode> nodes)
-        {
-            if (!graph.HasResult)
-            {
-                return;
-            }
-
-            List<CommnetLink> currentLinks = new List<CommnetLink>();
-
-            foreach (var node in nodes)
-            {
-                // If the node is not connected, there will not be a path
-                List<ConnectionGraphNode> path = new List<ConnectionGraphNode>();
-
-                if (!graph.TryGetPathFromSourceNode(node, ref path))
-                {
-                    // If no path was found, continue to the next node
-                    continue;
-                }
-
-                // Path to the source node itself
-                if (path.Count == 1)
-                {
-                    sourceGuid = path[0].Owner;
-                    continue;
-                }
-
-                // We start at 1, so we can get the current node and the previous node when going over the path
-                for (int i = 1; i < path.Count; i ++)
-                {
-                    var previousNode = path[i - 1];
-                    var currentNode = path[i];
-
-                    var link = GetLink(previousNode, currentNode);
-
-                    if (link != null) // If the link already exists, no need to create a new link
-                    {
-                        if (!currentLinks.Contains(link))
-                        {
-                            currentLinks.Add(link);
-                        }
-                        
-                        continue;
-                    }
-
-                    link = new CommnetLink(previousNode, currentNode);
-                    currentLinks.Add(link);
-                    links.Add(link);
-
-                    changed = true;
-                }
-            }
-
-            RemoveUnusedLinks(currentLinks);
-            UpdateMap(false);
-        }
-
-        public static void UpdateMap(bool forceUpdate)
+        public static void UpdateMap()
         {
             // We only have to update when something has changed and are actually in the map view
-            if ((!changed && !forceUpdate) || !EventListener.isInMapView)
+            if (!EventListener.isInMapView)
             {
                 return;
             }
@@ -100,9 +44,9 @@ namespace Comlines.Commlines
             var mapObjects = core.map3D.GetComponentsInChildren<Map3DFocusItem>();
             CreateLookup(mapObjects);
 
-            foreach (var link in links)
+            foreach (var link in LinkManager.links)
             {
-                var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
+                var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
                 var guid2 = link.Node2.Owner;
 
                 var mapConnection = GetMapConnection(guid1, guid2);
@@ -135,22 +79,13 @@ namespace Comlines.Commlines
             connections.Remove(connection);
         }
 
-        private static CommnetLink GetLink(ConnectionGraphNode comm1, ConnectionGraphNode comm2)
+        public static void RemoveLink(CommnetLink link)
         {
-            foreach (var link  in links)
-            {
-                if (link.Node1.Owner == comm1.Owner && link.Node2.Owner == comm2.Owner)
-                {
-                    return link;
-                }
+            // Remove the line if one is already created
+            var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
+            var guid2 = link.Node2.Owner;
 
-                if (link.Node1.Owner == comm2.Owner && link.Node2.Owner == comm1.Owner)
-                {
-                    return link;
-                }
-            }
-
-            return null;
+            GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
         }
 
         private static CommnetMapConnection GetMapConnection(IGGuid comm)
@@ -182,33 +117,7 @@ namespace Comlines.Commlines
             }
 
             return null;
-        }
-
-        private static void RemoveUnusedLinks(List<CommnetLink> stillInUse)
-        {
-            List<CommnetLink> toRemove = new List<CommnetLink>();
-
-            foreach (var link in links)
-            {
-                if (!stillInUse.Contains(link))
-                {
-                    toRemove.Add(link);
-
-                    var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
-                    GetMapConnection(guid1).Remove(mapLookup.Get(link.Node2.Owner));
-                }
-            }
-
-            if (toRemove.Count > 0)
-            {
-                changed = true;
-            }
-
-            foreach (var link in toRemove)
-            {
-                links.Remove(link);
-            }
-        }
+        }        
 
         private static void CreateLookup(Map3DFocusItem[] mapObjects)
         {

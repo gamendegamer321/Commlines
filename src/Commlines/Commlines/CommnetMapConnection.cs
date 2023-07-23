@@ -1,5 +1,4 @@
-﻿using BepInEx.Logging;
-using Commlines.Commlines;
+﻿using Commlines.Commlines;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
@@ -8,8 +7,7 @@ namespace Comlines.Commlines
 {
     public class CommnetMapConnection : MonoBehaviour
     {
-        private const float WIDTH = 0.05f;
-        private static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("Commnet Connection");
+        private const float WIDTH = 0.03f;
 
         public IGGuid source { get; private set; }
         public List<IGGuid> targets { get; private set; } = new List<IGGuid>();
@@ -72,8 +70,18 @@ namespace Comlines.Commlines
 
         public void Remove(Map3DFocusItem targetNode)
         {
+            if (targetNode == null)
+            {
+                return;
+            }
+
             targets.Remove(targetNode.AssociatedMapItem.SimGUID);
             targetData.Remove(targetNode);
+
+            if (targets.Count == 0)
+            {
+                Destroy(this);
+            }
         }
     }
 }
