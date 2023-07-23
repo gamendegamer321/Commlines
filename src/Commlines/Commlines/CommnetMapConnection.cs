@@ -1,5 +1,4 @@
-﻿using BepInEx.Logging;
-using Commlines.Commlines;
+﻿using Commlines.Commlines;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
