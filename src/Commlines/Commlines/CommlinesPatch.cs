@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Commlines.Commlines;
+using HarmonyLib;
 using KSP.Sim;
 
 namespace Comlines.Commlines
@@ -12,8 +13,8 @@ namespace Comlines.Commlines
         {
             var traverse = Traverse.Create(__instance);
             var nodes = traverse.Field("_allNodes").GetValue() as List<ConnectionGraphNode>;
-            var sourceIndex =(int)traverse.Field("_prevSourceIndex").GetValue();
-            CommlineManager.UpdateConnections(nodes, nodes[sourceIndex]);
+            var sourceIndex = (int)traverse.Field("_prevSourceIndex").GetValue();
+            LinkManager.UpdateConnections(__instance, nodes, nodes[sourceIndex]);
         }
     }
 }

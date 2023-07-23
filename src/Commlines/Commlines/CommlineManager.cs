@@ -1,9 +1,11 @@
 ﻿using BepInEx.Logging;
+using Commlines.Commlines;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim;
 using KSP.Sim.impl;
 using Unity.Mathematics;
+using UnityEngine.Networking.Types;
 using UnityEngine.UIElements.Collections;
 
 namespace Comlines.Commlines
@@ -12,80 +14,18 @@ namespace Comlines.Commlines
     {
         private static ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
 
-        private readonly static List<CommnetLink> links = new List<CommnetLink>();
         private readonly static List<CommnetMapConnection> connections = new List<CommnetMapConnection>();
         private readonly static Dictionary<IGGuid, Map3DFocusItem> mapLookup = new Dictionary<IGGuid, Map3DFocusItem>();
         private static bool changed;
 
-        private static IGGuid sourceGuid;
-        private static IGGuid kscGuid;
+        public static IGGuid kscGuid { get; private set; }
 
         private static GameInstance Game => GameManager.Instance.Game;
 
-        public static void UpdateConnections(List<ConnectionGraphNode> nodes, ConnectionGraphNode sourceNode)
-        {
-            if (!EventListener.isInMapView)
-            {
-                return;
-            }
-
-            List<CommnetLink> currentLinks = new List<CommnetLink>();
-            sourceGuid = sourceNode.Owner;
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                var currentNode = nodes[i];
-
-                if (!currentNode.IsActive) // If the node is not active, it can not be connected
-                {
-                    continue;
-                }
-
-                var maxDistance1 = currentNode.MaxRange * currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
-
-                // We start one higher than the previous as this is the first node to check it against
-                for (int j = i + 1; j < nodes.Count; j++)
-                {
-                    var nextNode = nodes[j];
-
-                    if (!nextNode.IsActive)
-                    {
-                        continue;
-                    }
-
-                    if (!IsValidConnection(currentNode, nextNode, maxDistance1)) // No need to check anything if they are not connected
-                    {
-                        continue;
-                    }
-
-                    var link = GetLink(currentNode.Owner, nextNode.Owner);
-
-                    if (link != null) // If the link already exists, no need to create a new link
-                    {
-                        if (!currentLinks.Contains(link))
-                        {
-                            currentLinks.Add(link);
-                        }
-                        
-                        continue;
-                    }
-
-                    link = new CommnetLink(currentNode, nextNode);
-                    currentLinks.Add(link);
-                    links.Add(link);
-
-                    changed = true;
-                }
-            }
-
-            RemoveUnusedLinks(currentLinks);
-            UpdateMap(false);
-        }
-
-        public static void UpdateMap(bool forceUpdate)
+        public static void UpdateMap()
         {
             // We only have to update when something has changed and are actually in the map view
-            if ((!changed && !forceUpdate) || !EventListener.isInMapView)
+            if (!EventListener.isInMapView)
             {
                 return;
             }
@@ -104,9 +44,9 @@ namespace Comlines.Commlines
             var mapObjects = core.map3D.GetComponentsInChildren<Map3DFocusItem>();
             CreateLookup(mapObjects);
 
-            foreach (var link in links)
+            foreach (var link in LinkManager.links)
             {
-                var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
+                var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
                 var guid2 = link.Node2.Owner;
 
                 var mapConnection = GetMapConnection(guid1, guid2);
@@ -139,34 +79,13 @@ namespace Comlines.Commlines
             connections.Remove(connection);
         }
 
-        private static CommnetLink GetLink(IGGuid comm1, IGGuid comm2)
+        public static void RemoveLink(CommnetLink link)
         {
-            foreach (var link in links)
-            {
-                if (link.Node1.Owner == comm1 && link.Node2.Owner == comm2)
-                {
-                    return link;
-                }
+            // Remove the line if one is already created
+            var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
+            var guid2 = link.Node2.Owner;
 
-                if (link.Node1.Owner == comm2 && link.Node2.Owner == comm1)
-                {
-                    return link;
-                }
-            }
-
-
-            // If its the ksc also check if it still has a valid connection to the source node
-            if (comm1 == kscGuid)
-            {
-                return GetLink(sourceGuid, comm2);
-            }
-
-            if (comm2 == kscGuid)
-            {
-                return GetLink(comm1, sourceGuid);
-            }
-
-            return null;
+            GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
         }
 
         private static CommnetMapConnection GetMapConnection(IGGuid comm)
@@ -198,36 +117,7 @@ namespace Comlines.Commlines
             }
 
             return null;
-        }
-
-        private static void RemoveUnusedLinks(List<CommnetLink> stillInUse)
-        {
-            List<CommnetLink> toRemove = new List<CommnetLink>();
-
-            foreach (var link in links)
-            {
-                if (!stillInUse.Contains(link))
-                {
-                    toRemove.Add(link);
-
-                    // Remove the line if one is already created
-                    var guid1 = link.Node1.Owner == sourceGuid ? kscGuid : link.Node1.Owner;
-                    var guid2 = link.Node2.Owner;
-                    
-                    GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
-                }
-            }
-
-            if (toRemove.Count > 0)
-            {
-                changed = true;
-            }
-
-            foreach (var link in toRemove)
-            {
-                links.Remove(link);
-            }
-        }
+        }        
 
         private static void CreateLookup(Map3DFocusItem[] mapObjects)
         {
@@ -242,13 +132,6 @@ namespace Comlines.Commlines
                     kscGuid = obj.AssociatedMapItem.SimGUID;
                 }
             }
-        }
-
-        private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance1)
-        {
-            var distance = math.distancesq(node1.Position, node2.Position);
-
-            return distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange;
         }
     }
 }

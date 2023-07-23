@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using Comlines.Commlines;
 using HarmonyLib;
 using SpaceWarp;
@@ -21,6 +22,8 @@ public class CommlinesPlugin : BaseSpaceWarpPlugin
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public static CommlinesPlugin Instance { get; set; }
 
+    public static ConfigEntry<bool> configEntry { get; private set; }
+
     /// <summary>
     /// Runs when the mod is first initialized.
     /// </summary>
@@ -34,6 +37,8 @@ public class CommlinesPlugin : BaseSpaceWarpPlugin
 
         // Start the event listener
         EventListener.RegisterEvents();
+
+        configEntry = Config.Bind("Commlines Section", "Use path", false, "Only display commnet paths to the source node, instead of all paths between all vessels.");
 
         Logger.LogInfo($"Initialized commlines");
     }
