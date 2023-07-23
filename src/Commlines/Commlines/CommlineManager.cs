@@ -2,10 +2,7 @@
 using Commlines.Commlines;
 using KSP.Game;
 using KSP.Map;
-using KSP.Sim;
 using KSP.Sim.impl;
-using Unity.Mathematics;
-using UnityEngine.Networking.Types;
 using UnityEngine.UIElements.Collections;
 
 namespace Comlines.Commlines
@@ -16,7 +13,6 @@ namespace Comlines.Commlines
 
         private readonly static List<CommnetMapConnection> connections = new List<CommnetMapConnection>();
         private readonly static Dictionary<IGGuid, Map3DFocusItem> mapLookup = new Dictionary<IGGuid, Map3DFocusItem>();
-        private static bool changed;
 
         public static IGGuid kscGuid { get; private set; }
 
@@ -29,8 +25,6 @@ namespace Comlines.Commlines
             {
                 return;
             }
-
-            changed = false;
 
             // Try to get the map core
             MapCore core;
