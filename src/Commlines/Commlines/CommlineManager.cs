@@ -214,6 +214,9 @@ namespace Comlines.Commlines
                 if (!stillInUse.Contains(link))
                 {
                     toRemove.Add(link);
+
+                    // Remove the line if one is already created
+                    GetMapConnection(link.Node1.Owner)?.Remove(mapLookup.Get(link.Node2.Owner));
                 }
             }
 

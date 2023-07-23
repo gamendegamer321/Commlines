@@ -74,22 +74,15 @@ namespace Comlines.Commlines
             targetData.Add(targetNode);
         }
 
-        private void CheckValidity()
+        public void Remove(Map3DFocusItem targetNode)
         {
-            List<IGGuid> toRemove = new List<IGGuid>();
-
-            foreach (var target in targets)
+            if (targetNode == null)
             {
-                if (!CommlineManager.IsStillValid(source, target))
-                {
-                    toRemove.Add(target);
-                }
+                return;
             }
 
-            foreach (var target in toRemove)
-            {
-                targets.Remove(target);
-            }
+            targets.Remove(targetNode.AssociatedMapItem.SimGUID);
+            targetData.Remove(targetNode);
 
             if (targets.Count == 0)
             {
