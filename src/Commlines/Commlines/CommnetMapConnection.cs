@@ -26,8 +26,6 @@ namespace Comlines.Commlines
                 return;
             }
 
-            CheckValidity();
-
             var positions = new List<Vector3>();
             var localPos = sourceData.transform.position;
 
