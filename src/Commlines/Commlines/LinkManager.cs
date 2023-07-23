@@ -8,7 +8,7 @@ namespace Commlines.Commlines
 {
     public static class LinkManager
     {
-        public static List<CommnetLink> links { get; private set; } = new();
+        public readonly static List<CommnetLink> links = new();
         public static IGGuid sourceGuid { get; private set; }
 
         public static void UpdateConnections(ConnectionGraph graph, List<ConnectionGraphNode> nodes, ConnectionGraphNode sourceNode)
