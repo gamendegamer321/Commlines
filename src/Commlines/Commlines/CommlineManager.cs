@@ -35,12 +35,23 @@ namespace Comlines.Commlines
             for (int i = 0; i < nodes.Count; i++)
             {
                 var currentNode = nodes[i];
+
+                if (!currentNode.IsActive) // If the node is not active, it can not be connected
+                {
+                    continue;
+                }
+
                 var maxDistance1 = currentNode.MaxRange * currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
 
                 // We start one higher than the previous as this is the first node to check it against
                 for (int j = i + 1; j < nodes.Count; j++)
                 {
                     var nextNode = nodes[j];
+
+                    if (!nextNode.IsActive)
+                    {
+                        continue;
+                    }
 
                     if (!IsValidConnection(currentNode, nextNode, maxDistance1)) // No need to check anything if they are not connected
                     {
