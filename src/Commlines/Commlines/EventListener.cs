@@ -18,7 +18,7 @@ namespace Comlines.Commlines
         {
             // force the map to update as each time the map gets initialized all objects get generated again
             isInMapView = true;
-            CommlineManager.UpdateMap();
+            CommlineManager.RefreshLinks();
         }
 
         private static void OnStateEntered(MessageCenterMessage msg)

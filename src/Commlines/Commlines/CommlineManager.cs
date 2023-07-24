@@ -9,68 +9,82 @@ namespace Comlines.Commlines
 {
     public static class CommlineManager
     {
-        private static ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
-
         private readonly static List<CommnetMapConnection> connections = new List<CommnetMapConnection>();
         private readonly static Dictionary<IGGuid, Map3DFocusItem> mapLookup = new Dictionary<IGGuid, Map3DFocusItem>();
 
+        private static GameInstance Game => GameManager.Instance.Game;
+        private static ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
+        private static MapCore mapCore;
+
         public static IGGuid kscGuid { get; private set; }
 
-        private static GameInstance Game => GameManager.Instance.Game;
+        public static void RefreshLinks()
+        {
+            mapLookup.Clear(); // Clear the lookup as the map regenerates each time you open it
+            foreach (var link in LinkManager.links)
+            {
+                AddLink(link);
+            }
+        }
 
-        public static void UpdateMap()
+        public static bool AddLink(CommnetLink link)
         {
             // We only have to update when something has changed and are actually in the map view
             if (!EventListener.isInMapView)
             {
-                return;
+                return false;
             }
 
             // Try to get the map core
-            MapCore core;
-            if (!Game.Map.TryGetMapCore(out core))
+            if (mapCore == null && !Game.Map.TryGetMapCore(out mapCore))
             {
                 logger.LogError("Could not find map core");
-                return;
+                return false;
             }
 
-            // Get all icons shown on the map
-            var mapObjects = core.map3D.GetComponentsInChildren<Map3DFocusItem>();
-            CreateLookup(mapObjects);
+            // The first node might be the KSC, in that case we have to swap out the guid (source node uses a seperate guid)
+            var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
+            var guid2 = link.Node2.Owner;
 
-            foreach (var link in LinkManager.links)
+            // Only refresh the lookup if we don't have one of the guids in the lookup
+            if (!mapLookup.ContainsKey(guid1) || !mapLookup.ContainsKey(guid2))
             {
-                var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
-                var guid2 = link.Node2.Owner;
+                var mapObjects = mapCore.map3D.GetComponentsInChildren<Map3DFocusItem>();
+                CreateLookup(mapObjects);
 
-                var mapConnection = GetMapConnection(guid1, guid2);
-
-                // If we already have a line for this link, no need to draw another
-                if (mapConnection != null)
+                // If it still does not exist, we can not add it
+                if (!mapLookup.ContainsKey(guid1) || !mapLookup.ContainsKey(guid2))
                 {
-                    continue;
+                    logger.LogInfo($"Could not find an object {guid1} or {guid2}");
+                    return false;
                 }
-
-                mapConnection = GetMapConnection(guid1);
-
-                // If we already have a map connection component on this source, we can simply add this line to that map connection component
-                if (mapConnection != null)
-                {
-                    mapConnection.Add(mapLookup.Get(guid2));
-                    continue;
-                }
-
-                var obj = mapLookup.Get(guid1);
-                var connection = obj.gameObject.AddComponent<CommnetMapConnection>();
-
-                connection.Setup(obj, mapLookup.Get(guid2));
-                connections.Add(connection);
             }
-        }
 
-        public static void Destroyed(CommnetMapConnection connection)
-        {
-            connections.Remove(connection);
+            var mapConnection = GetMapConnection(guid1, guid2);
+
+            // If we already have a line for this link, no need to draw another
+            if (mapConnection != null)
+            {
+                return true;
+            }
+
+            mapConnection = GetMapConnection(guid1);
+
+            // If we already have a map connection component on this source, we can simply add this line to that map connection component
+            if (mapConnection != null)
+            {
+                mapConnection.Add(mapLookup.Get(guid2));
+                return true;
+            }
+
+            // Otherwise create a map connection component and set it up
+            var obj = mapLookup.Get(guid1);
+            var connection = obj.gameObject.AddComponent<CommnetMapConnection>();
+
+            connection.Setup(obj, mapLookup.Get(guid2));
+            connections.Add(connection);
+
+            return true;
         }
 
         public static void RemoveLink(CommnetLink link)
@@ -80,6 +94,11 @@ namespace Comlines.Commlines
             var guid2 = link.Node2.Owner;
 
             GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
+        }
+
+        public static void Destroyed(CommnetMapConnection connection)
+        {
+            connections.Remove(connection);
         }
 
         private static CommnetMapConnection GetMapConnection(IGGuid comm)
@@ -111,7 +130,7 @@ namespace Comlines.Commlines
             }
 
             return null;
-        }        
+        }
 
         private static void CreateLookup(Map3DFocusItem[] mapObjects)
         {

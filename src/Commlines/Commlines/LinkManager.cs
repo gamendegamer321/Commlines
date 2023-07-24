@@ -38,7 +38,6 @@ namespace Commlines.Commlines
             List<CommnetLink> currentLinks = CommlinesPlugin.configEntry.Value ? GeneratePaths(graph, nodes) : GenerateAllConnections(nodes);
 
             RemoveUnusedLinks(currentLinks);
-            CommlineManager.UpdateMap();
         }
 
         private static List<CommnetLink> GenerateAllConnections(List<ConnectionGraphNode> nodes)
@@ -84,8 +83,13 @@ namespace Commlines.Commlines
                     }
 
                     link = new CommnetLink(currentNode, nextNode);
-                    currentLinks.Add(link);
-                    links.Add(link);
+
+                    // Only add it to the discovered links if it has been successfully placed on the map
+                    if (CommlineManager.AddLink(link))
+                    {
+                        currentLinks.Add(link);
+                        links.Add(link);
+                    }
                 }
             }
 
@@ -124,8 +128,13 @@ namespace Commlines.Commlines
                     }
 
                     link = new CommnetLink(previousNode, currentNode);
-                    currentLinks.Add(link);
-                    links.Add(link);
+
+                    // Only add it to the discovered links if it has been successfully placed on the map
+                    if (CommlineManager.AddLink(link))
+                    {
+                        currentLinks.Add(link);
+                        links.Add(link);
+                    }
                 }
             }
 
