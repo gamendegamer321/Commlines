@@ -52,6 +52,8 @@ namespace Comlines.Commlines
                 var mapObjects = mapCore.map3D.GetComponentsInChildren<Map3DFocusItem>();
                 CreateLookup(mapObjects);
 
+                guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner; // We might now know the ksc guid
+
                 // If it still does not exist, we can not add it
                 if (!mapLookup.ContainsKey(guid1) || !mapLookup.ContainsKey(guid2))
                 {
