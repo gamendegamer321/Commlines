@@ -5,7 +5,7 @@ namespace Comlines.Commlines
 {
     public static class EventListener
     { 
-        public static bool isInMapView { get; private set; }
+        public static bool IsInMapView { get; private set; }
 
         public static void RegisterEvents()
         {
@@ -17,13 +17,13 @@ namespace Comlines.Commlines
         private static void OnMapInitialized(MessageCenterMessage _)
         {
             // force the map to update as each time the map gets initialized all objects get generated again
-            isInMapView = true;
+            IsInMapView = true;
             CommlineManager.RefreshLinks();
         }
 
         private static void OnMapViewLeft(MessageCenterMessage _)
         {
-            isInMapView = false;
+            IsInMapView = false;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using BepInEx.Logging;
-using Comlines;
+﻿using Comlines;
 using Comlines.Commlines;
 using KSP.Sim;
 using KSP.Sim.impl;
@@ -13,7 +12,7 @@ namespace Commlines.Commlines
         private static ConnectionGraph graph;
         private static bool updatingGraph;
 
-        public readonly static List<CommnetLink> links = new();
+        public readonly static List<CommnetLink> links = new List<CommnetLink>();
         public static IGGuid sourceGuid { get; private set; }
 
         public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes, ConnectionGraphNode sourceNode)
@@ -28,7 +27,7 @@ namespace Commlines.Commlines
         public static void UpdateConnections()
         {
             // We only want to update the connection after the game has updated it's CommNet connections.
-            if (!EventListener.isInMapView || !updatingGraph || !graph.HasResult)
+            if (!EventListener.IsInMapView || !updatingGraph || !graph.HasResult)
             {
                 return;
             }

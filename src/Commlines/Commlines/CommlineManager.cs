@@ -13,7 +13,7 @@ namespace Comlines.Commlines
         private readonly static Dictionary<IGGuid, Map3DFocusItem> mapLookup = new Dictionary<IGGuid, Map3DFocusItem>();
 
         private static GameInstance Game => GameManager.Instance.Game;
-        private static ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
+        private static readonly ManualLogSource logger = Logger.CreateLogSource("Commline Manager");
         private static MapCore mapCore;
 
         public static IGGuid kscGuid { get; private set; }
@@ -30,7 +30,7 @@ namespace Comlines.Commlines
         public static bool AddLink(CommnetLink link)
         {
             // We only have to update when something has changed and are actually in the map view
-            if (!EventListener.isInMapView)
+            if (!EventListener.IsInMapView)
             {
                 return false;
             }
