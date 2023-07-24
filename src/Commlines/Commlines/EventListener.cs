@@ -11,7 +11,7 @@ namespace Comlines.Commlines
         {
             var messageCenter = GameManager.Instance.Game.Messages;
             messageCenter.Subscribe<MapInitializedMessage>(OnMapInitialized);
-            messageCenter.Subscribe<GameStateEnteredMessage>(OnStateEntered);
+            messageCenter.Subscribe<MapViewLeftMessage>(OnLeftMapView);
         }
 
         private static void OnMapInitialized(MessageCenterMessage _)
@@ -21,14 +21,9 @@ namespace Comlines.Commlines
             CommlineManager.RefreshLinks();
         }
 
-        private static void OnStateEntered(MessageCenterMessage msg)
+        private static void OnLeftMapView(MessageCenterMessage msg)
         {
-            var message = (GameStateEnteredMessage)msg;
-
-            if (message.StateBeingEntered != GameState.Map3DView)
-            {
-                isInMapView = false;
-            }
+            isInMapView = false;
         }
     }
 }
