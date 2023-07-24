@@ -51,7 +51,7 @@ namespace Comlines.Commlines
                 // If it still does not exist, we can not add it
                 if (!mapLookup.ContainsKey(guid1) || !mapLookup.ContainsKey(guid2))
                 {
-                    logger.LogInfo($"Could not find an object {guid1} or {guid2}");
+                    logger.LogWarning($"Could not find an object {guid1} or {guid2}");
                     return false;
                 }
             }
