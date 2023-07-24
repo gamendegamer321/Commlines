@@ -10,8 +10,8 @@ namespace Comlines.Commlines
         public static void RegisterEvents()
         {
             var messageCenter = GameManager.Instance.Game.Messages;
-            messageCenter.Subscribe<MapInitializedMessage>(OnMapInitialized);
-            messageCenter.Subscribe<MapViewLeftMessage>(OnMapViewLeft);
+            messageCenter.PersistentSubscribe<MapInitializedMessage>(OnMapInitialized);
+            messageCenter.PersistentSubscribe<MapViewLeftMessage>(OnMapViewLeft);
         }
 
         private static void OnMapInitialized(MessageCenterMessage _)
