@@ -11,7 +11,7 @@ namespace Comlines.Commlines
         {
             var messageCenter = GameManager.Instance.Game.Messages;
             messageCenter.Subscribe<MapInitializedMessage>(OnMapInitialized);
-            messageCenter.Subscribe<MapViewLeftMessage>(OnLeftMapView);
+            messageCenter.Subscribe<MapViewLeftMessage>(OnMapViewLeft);
         }
 
         private static void OnMapInitialized(MessageCenterMessage _)
@@ -21,7 +21,7 @@ namespace Comlines.Commlines
             CommlineManager.RefreshLinks();
         }
 
-        private static void OnLeftMapView(MessageCenterMessage msg)
+        private static void OnMapViewLeft(MessageCenterMessage _)
         {
             isInMapView = false;
         }
