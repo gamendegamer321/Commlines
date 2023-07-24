@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using Comlines.Commlines;
+using Commlines.Commlines;
 using HarmonyLib;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
@@ -41,5 +42,10 @@ public class CommlinesPlugin : BaseSpaceWarpPlugin
         configEntry = Config.Bind("Commlines Section", "Use path", false, "Only display commnet paths to the source node, instead of all paths between all vessels.");
 
         Logger.LogInfo($"Initialized commlines");
+    }
+
+    public void Update()
+    {
+        LinkManager.UpdateConnections();
     }
 }

@@ -1,11 +1,12 @@
-﻿using Commlines.Commlines;
+﻿using BepInEx.Logging;
+using Commlines.Commlines;
 using HarmonyLib;
 using KSP.Sim;
 
 namespace Comlines.Commlines
 {
     [HarmonyPatch(typeof(ConnectionGraph))]
-    [HarmonyPatch("OnUpdate")]
+    [HarmonyPatch("RebuildConnectionGraph")]
     public class CommlinesPatch
     {
         [HarmonyPostfix]
@@ -14,7 +15,7 @@ namespace Comlines.Commlines
             var traverse = Traverse.Create(__instance);
             var nodes = traverse.Field("_allNodes").GetValue() as List<ConnectionGraphNode>;
             var sourceIndex = (int)traverse.Field("_prevSourceIndex").GetValue();
-            LinkManager.UpdateConnections(__instance, nodes, nodes[sourceIndex]);
+            LinkManager.RefreshingCommnet(__instance, nodes, nodes[sourceIndex]);
         }
     }
 }

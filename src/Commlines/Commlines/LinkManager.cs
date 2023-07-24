@@ -1,4 +1,5 @@
-﻿using Comlines;
+﻿using BepInEx.Logging;
+using Comlines;
 using Comlines.Commlines;
 using KSP.Sim;
 using KSP.Sim.impl;
@@ -8,18 +9,33 @@ namespace Commlines.Commlines
 {
     public static class LinkManager
     {
+        private static List<ConnectionGraphNode> nodes = new List<ConnectionGraphNode>();
+        private static ConnectionGraph graph;
+        private static bool updatingGraph;
+
         public readonly static List<CommnetLink> links = new();
         public static IGGuid sourceGuid { get; private set; }
 
-        public static void UpdateConnections(ConnectionGraph graph, List<ConnectionGraphNode> nodes, ConnectionGraphNode sourceNode)
+        public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes, ConnectionGraphNode sourceNode)
         {
-            if (!EventListener.isInMapView)
+            // Store everything to use when the graph is done updating
+            graph = currentGraph;
+            nodes = currentNodes;
+            sourceGuid = sourceNode.Owner;
+            updatingGraph = true;
+        }
+
+        public static void UpdateConnections()
+        {
+            // We only want to update the connection after the game has updated it's CommNet connections.
+            if (!EventListener.isInMapView || !updatingGraph || !graph.HasResult)
             {
                 return;
             }
 
+            updatingGraph = false;
+
             List<CommnetLink> currentLinks = CommlinesPlugin.configEntry.Value ? GeneratePaths(graph, nodes) : GenerateAllConnections(nodes);
-            sourceGuid = sourceNode.Owner;
 
             RemoveUnusedLinks(currentLinks);
             CommlineManager.UpdateMap();
