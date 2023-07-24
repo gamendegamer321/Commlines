@@ -29,12 +29,6 @@ namespace Comlines.Commlines
 
         public static bool AddLink(CommnetLink link)
         {
-            // We only have to update when something has changed and are actually in the map view
-            if (!EventListener.IsInMapView)
-            {
-                return false;
-            }
-
             // Try to get the map core
             if (mapCore == null && !Game.Map.TryGetMapCore(out mapCore))
             {
