@@ -7,7 +7,7 @@ This mod requires [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%2
 Simply install the mod and whenever you open the map screen, you can see the green lines between vessels that can communicate with each other.
 If the green lines become too much, you can enable path mode in the settings, which will only show the path the connection takes from that vessel back to the KSC. (see also the images below for a comparison)
 
-**With pathmode enabled the lines might "flicker" (quickly disappearing and then reappearing).**
+When switching to path mode or back, it might take a few seconds for the lines to update.
 
 ## Images
 Below I have added a few images of how the lines look. I have added images with pathmode off and images of the same scenario with pathmode on.
