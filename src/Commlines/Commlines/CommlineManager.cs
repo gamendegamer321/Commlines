@@ -3,7 +3,6 @@ using Commlines.Commlines;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim.impl;
-using UnityEngine.UIElements.Collections;
 
 namespace Comlines.Commlines
 {
@@ -69,15 +68,15 @@ namespace Comlines.Commlines
             // If we already have a map connection component on this source, we can simply add this line to that map connection component
             if (mapConnection != null)
             {
-                mapConnection.Add(mapLookup.Get(guid2));
+                mapConnection.Add(mapLookup[guid2]);
                 return true;
             }
 
             // Otherwise create a map connection component and set it up
-            var obj = mapLookup.Get(guid1);
+            var obj = mapLookup[guid1];
             var connection = obj.gameObject.AddComponent<CommnetMapConnection>();
 
-            connection.Setup(obj, mapLookup.Get(guid2));
+            connection.Setup(obj, mapLookup[guid2]);
             connections.Add(connection);
 
             return true;
@@ -89,7 +88,7 @@ namespace Comlines.Commlines
             var guid1 = link.Node1.Owner == LinkManager.sourceGuid ? kscGuid : link.Node1.Owner;
             var guid2 = link.Node2.Owner;
 
-            GetMapConnection(guid1, guid2)?.Remove(mapLookup.Get(guid2));
+            GetMapConnection(guid1, guid2)?.Remove(mapLookup[guid2]);
         }
 
         public static void Destroyed(CommnetMapConnection connection)
