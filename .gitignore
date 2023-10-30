@@ -56,3 +56,5 @@ scripts/
 external_dlls/
 .idea/
 .git/
+
+**/Ksp2.log
