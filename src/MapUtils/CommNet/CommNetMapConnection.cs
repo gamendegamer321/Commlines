@@ -9,13 +9,13 @@ namespace MapUtils.CommNet
         private const float Width = 0.03f;
 
         public IGGuid Source { get; private set; }
-        public readonly List<IGGuid> Targets = new List<IGGuid>();
+        public IGGuid Target { get; private set; }
 
         private Map3DFocusItem _sourceData;
-        private readonly List<Map3DFocusItem> _targetData = new List<Map3DFocusItem>();
+        private Map3DFocusItem _targetData;
 
         private LineRenderer _renderer;
-
+        
         public void Update()
         {
             if (_renderer == null)
@@ -23,21 +23,8 @@ namespace MapUtils.CommNet
                 return;
             }
 
-            var positions = new List<Vector3>();
-            var localPos = _sourceData.transform.position;
-
-            for (int i = 0; i < _targetData.Count; i++)
-            {
-                if (i != 0 || _targetData.Count == 1)
-                {
-                    positions.Add(localPos);
-                }
-
-                positions.Add(_targetData[i].transform.position);
-            }
-
-            _renderer.positionCount = positions.Count;
-            _renderer.SetPositions(positions.ToArray());
+            var positions = new[] { _sourceData.transform.position, _targetData.transform.position };
+            _renderer.SetPositions(positions);
         }
 
         private void OnDestroy()
@@ -50,37 +37,24 @@ namespace MapUtils.CommNet
         {
             // Set the data
             Source = thisNode.AssociatedMapItem.SimGUID;
-            Targets.Add(targetNode.AssociatedMapItem.SimGUID);
+            Target = targetNode.AssociatedMapItem.SimGUID;
 
             _sourceData = thisNode;
-            _targetData.Add(targetNode);
+            _targetData = targetNode;
 
             // Create the line renderer
             _renderer = gameObject.AddComponent<LineRenderer>();
             _renderer.material = MaterialManager.Material;
             _renderer.widthMultiplier = Width;
+            _renderer.positionCount = 2;
+            
+            var positions = new[] { _sourceData.transform.position, _targetData.transform.position };
+            _renderer.SetPositions(positions);
         }
 
-        public void Add(Map3DFocusItem targetNode)
+        public void Destroy()
         {
-            Targets.Add(targetNode.AssociatedMapItem.SimGUID);
-            _targetData.Add(targetNode);
-        }
-
-        public void Remove(Map3DFocusItem targetNode)
-        {
-            if (targetNode == null)
-            {
-                return;
-            }
-
-            Targets.Remove(targetNode.AssociatedMapItem.SimGUID);
-            _targetData.Remove(targetNode);
-
-            if (Targets.Count == 0)
-            {
-                Destroy(this);
-            }
+            Destroy(gameObject);
         }
     }
 }
