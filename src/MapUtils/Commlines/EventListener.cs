@@ -1,4 +1,5 @@
-﻿using KSP.Game;
+﻿using Commlines.Commlines;
+using KSP.Game;
 using KSP.Messages;
 
 namespace Comlines.Commlines

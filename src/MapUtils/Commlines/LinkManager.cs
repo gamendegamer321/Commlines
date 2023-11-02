@@ -1,7 +1,7 @@
-﻿using Comlines;
-using Comlines.Commlines;
+﻿using Comlines.Commlines;
 using KSP.Sim;
 using KSP.Sim.impl;
+using MapUtils;
 using Unity.Mathematics;
 
 namespace Commlines.Commlines
@@ -34,7 +34,7 @@ namespace Commlines.Commlines
 
             updatingGraph = false;
 
-            List<CommnetLink> currentLinks = CommlinesPlugin.configEntry.Value ? GeneratePaths(graph, nodes) : GenerateAllConnections(nodes);
+            List<CommnetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value ? GeneratePaths(graph, nodes) : GenerateAllConnections(nodes);
 
             RemoveUnusedLinks(currentLinks);
         }

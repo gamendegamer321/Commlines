@@ -1,10 +1,10 @@
 ﻿using BepInEx.Logging;
-using Commlines.Commlines;
+using Comlines.Commlines;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim.impl;
 
-namespace Comlines.Commlines
+namespace Commlines.Commlines
 {
     public static class CommlineManager
     {

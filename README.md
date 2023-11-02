@@ -1,4 +1,4 @@
-# Commlines
+# MapUtils
 Adds the CommNet lines from KSP 1 to KSP 2. This will finally allow you to see the CommNet you have set up in KSP 2.
 
 This mod requires [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx) 1.4.0+
