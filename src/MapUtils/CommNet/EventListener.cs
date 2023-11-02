@@ -1,8 +1,7 @@
-﻿using Commlines.Commlines;
-using KSP.Game;
+﻿using KSP.Game;
 using KSP.Messages;
 
-namespace Comlines.Commlines
+namespace MapUtils.CommNet
 {
     public static class EventListener
     { 
@@ -19,7 +18,7 @@ namespace Comlines.Commlines
         {
             // force the map to update as each time the map gets initialized all objects get generated again
             IsInMapView = true;
-            CommlineManager.RefreshLinks();
+            CommNetManager.RefreshLinks();
         }
 
         private static void OnMapViewLeft(MessageCenterMessage _)

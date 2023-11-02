@@ -1,47 +1,45 @@
-﻿using Comlines.Commlines;
-using KSP.Sim;
+﻿using KSP.Sim;
 using KSP.Sim.impl;
-using MapUtils;
 using Unity.Mathematics;
 
-namespace Commlines.Commlines
+namespace MapUtils.CommNet
 {
     public static class LinkManager
     {
-        private static List<ConnectionGraphNode> nodes = new List<ConnectionGraphNode>();
-        private static ConnectionGraph graph;
-        private static bool updatingGraph;
+        private static List<ConnectionGraphNode> _nodes = new List<ConnectionGraphNode>();
+        private static ConnectionGraph _graph;
+        private static bool _updatingGraph;
 
-        public readonly static List<CommnetLink> links = new List<CommnetLink>();
-        public static IGGuid sourceGuid { get; private set; }
+        public static readonly List<CommNetLink> Links = new List<CommNetLink>();
+        public static IGGuid SourceGuid { get; private set; }
 
         public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes, ConnectionGraphNode sourceNode)
         {
             // Store everything to use when the graph is done updating
-            graph = currentGraph;
-            nodes = currentNodes;
-            sourceGuid = sourceNode.Owner;
-            updatingGraph = true;
+            _graph = currentGraph;
+            _nodes = currentNodes;
+            SourceGuid = sourceNode.Owner;
+            _updatingGraph = true;
         }
 
         public static void UpdateConnections()
         {
             // We only want to update the connection after the game has updated it's CommNet connections.
-            if (!EventListener.IsInMapView || !updatingGraph || !graph.HasResult)
+            if (!EventListener.IsInMapView || !_updatingGraph || !_graph.HasResult)
             {
                 return;
             }
 
-            updatingGraph = false;
+            _updatingGraph = false;
 
-            List<CommnetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value ? GeneratePaths(graph, nodes) : GenerateAllConnections(nodes);
+            List<CommNetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value ? GeneratePaths(_graph, _nodes) : GenerateAllConnections(_nodes);
 
             RemoveUnusedLinks(currentLinks);
         }
 
-        private static List<CommnetLink> GenerateAllConnections(List<ConnectionGraphNode> nodes)
+        private static List<CommNetLink> GenerateAllConnections(List<ConnectionGraphNode> nodes)
         {
-            List<CommnetLink> currentLinks = new List<CommnetLink>();
+            List<CommNetLink> currentLinks = new List<CommNetLink>();
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -81,13 +79,13 @@ namespace Commlines.Commlines
                         continue;
                     }
 
-                    link = new CommnetLink(currentNode, nextNode);
+                    link = new CommNetLink(currentNode, nextNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommlineManager.AddLink(link))
+                    if (CommNetManager.AddLink(link))
                     {
                         currentLinks.Add(link);
-                        links.Add(link);
+                        Links.Add(link);
                     }
                 }
             }
@@ -95,9 +93,9 @@ namespace Commlines.Commlines
             return currentLinks;
         }
 
-        private static List<CommnetLink> GeneratePaths(ConnectionGraph graph, List<ConnectionGraphNode> nodes)
+        private static List<CommNetLink> GeneratePaths(ConnectionGraph graph, List<ConnectionGraphNode> nodes)
         {
-            List<CommnetLink> currentLinks = new List<CommnetLink>();
+            List<CommNetLink> currentLinks = new List<CommNetLink>();
 
             foreach (var node in nodes)
             {
@@ -126,13 +124,13 @@ namespace Commlines.Commlines
                         continue;
                     }
 
-                    link = new CommnetLink(previousNode, currentNode);
+                    link = new CommNetLink(previousNode, currentNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommlineManager.AddLink(link))
+                    if (CommNetManager.AddLink(link))
                     {
                         currentLinks.Add(link);
-                        links.Add(link);
+                        Links.Add(link);
                     }
                 }
             }
@@ -140,23 +138,23 @@ namespace Commlines.Commlines
             return currentLinks;
         }
 
-        private static void RemoveUnusedLinks(List<CommnetLink> stillInUse)
+        private static void RemoveUnusedLinks(List<CommNetLink> stillInUse)
         {
-            List<CommnetLink> toRemove = new List<CommnetLink>();
+            List<CommNetLink> toRemove = new List<CommNetLink>();
 
-            foreach (var link in links)
+            foreach (var link in Links)
             {
                 if (!stillInUse.Contains(link))
                 {
                     toRemove.Add(link);
 
-                    CommlineManager.RemoveLink(link);
+                    CommNetManager.RemoveLink(link);
                 }
             }
 
             foreach (var link in toRemove)
             {
-                links.Remove(link);
+                Links.Remove(link);
             }
         }
 
@@ -167,9 +165,9 @@ namespace Commlines.Commlines
             return distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange;
         }
 
-        private static CommnetLink GetLink(IGGuid comm1, IGGuid comm2)
+        private static CommNetLink GetLink(IGGuid comm1, IGGuid comm2)
         {
-            foreach (var link in LinkManager.links)
+            foreach (var link in LinkManager.Links)
             {
                 if (link.Node1.Owner == comm1 && link.Node2.Owner == comm2)
                 {

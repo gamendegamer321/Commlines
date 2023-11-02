@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 
-namespace Commlines.Commlines
+namespace MapUtils.CommNet
 {
     public static class MaterialManager
     {
-        private static string ShaderToUse = "Sprites/Default";
-        private static Color color = Color.green;
+        private const string ShaderToUse = "Sprites/Default";
+        private static readonly Color Color = Color.green;
         private static Material _material;
 
-        public static Material material
+        public static Material Material
         {
             get
             {
                 if (_material == null)
                 {
                     _material = new Material(Shader.Find(ShaderToUse));
-                    _material.color = color;
+                    _material.color = Color;
                 }
                 
                 return _material;
