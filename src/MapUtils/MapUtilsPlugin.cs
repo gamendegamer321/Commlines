@@ -1,8 +1,8 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Comlines.Commlines;
-using Commlines.Commlines;
 using HarmonyLib;
+using MapUtils.CommNet;
+using MapUtils.Patches;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
 
@@ -14,7 +14,7 @@ public class MapUtilsPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
     // ReSharper disable UnusedMember.Global
-    public const string ModGuid = "com.gamendegamer.commlines";
+    public const string ModGuid = "com.gamendegamer.maputils";
     public const string ModName = "MapUtils";
     public const string ModVer = "1.0.1";
     // ReSharper restore UnusedMember.Global
@@ -34,7 +34,7 @@ public class MapUtilsPlugin : BaseSpaceWarpPlugin
         Instance = this;
 
         // Create the patch
-        Harmony.CreateAndPatchAll(typeof(CommlinesPatch));
+        Harmony.CreateAndPatchAll(typeof(CommNetPatch));
 
         // Start the event listener
         EventListener.RegisterEvents();
