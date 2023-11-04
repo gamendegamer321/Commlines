@@ -1,19 +1,21 @@
 ﻿using KSP.Sim;
 using KSP.Sim.impl;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace MapUtils.CommNet
 {
     public static class LinkManager
     {
-        private static List<ConnectionGraphNode> _nodes = new List<ConnectionGraphNode>();
+        private static List<ConnectionGraphNode> _nodes = new();
         private static ConnectionGraph _graph;
         private static bool _updatingGraph;
 
-        public static readonly List<CommNetLink> Links = new List<CommNetLink>();
+        public static readonly List<CommNetLink> Links = new();
         public static IGGuid SourceGuid { get; private set; }
 
-        public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes, ConnectionGraphNode sourceNode)
+        public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes,
+            ConnectionGraphNode sourceNode)
         {
             // Store everything to use when the graph is done updating
             _graph = currentGraph;
@@ -32,7 +34,9 @@ namespace MapUtils.CommNet
 
             _updatingGraph = false;
 
-            List<CommNetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value ? GeneratePaths(_graph, _nodes) : GenerateAllConnections(_nodes);
+            List<CommNetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value
+                ? GeneratePaths(_graph, _nodes)
+                : GenerateAllConnections(_nodes);
 
             RemoveUnusedLinks(currentLinks);
         }
@@ -50,19 +54,22 @@ namespace MapUtils.CommNet
                     continue;
                 }
 
-                var maxDistance1 = currentNode.MaxRange * currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
+                var maxDistance =
+                    currentNode.MaxRange *
+                    currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
 
                 // We start one higher than the previous as this is the first node to check it against
                 for (int j = i + 1; j < nodes.Count; j++)
                 {
                     var nextNode = nodes[j];
 
-                    if (!nextNode.IsActive)
+                    if (!nextNode.IsActive) // If the node is inactive, it can never connect
                     {
                         continue;
                     }
 
-                    if (!IsValidConnection(currentNode, nextNode, maxDistance1)) // No need to check anything if they are not connected
+                    if (!IsValidConnection(currentNode, nextNode,
+                            maxDistance, out Color color)) // No need to check anything if they are not connected
                     {
                         continue;
                     }
@@ -71,10 +78,8 @@ namespace MapUtils.CommNet
 
                     if (link != null) // If the link already exists, no need to create a new link
                     {
-                        if (!currentLinks.Contains(link))
-                        {
-                            currentLinks.Add(link);
-                        }
+                        currentLinks.Add(link);
+                        link.Connection.SetColor(color);
 
                         continue;
                     }
@@ -86,6 +91,7 @@ namespace MapUtils.CommNet
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
+                        link.Connection.SetColor(color);
                     }
                 }
             }
@@ -114,12 +120,17 @@ namespace MapUtils.CommNet
 
                     var link = GetLink(previousNode.Owner, currentNode.Owner);
 
+                    // We still want to know the color
+                    var distance = math.distancesq(previousNode.Position, currentNode.Position);
+                    var shortestMaxDistance = previousNode.MaxRange < currentNode.MaxRange
+                        ? previousNode.MaxRange * previousNode.MaxRange
+                        : currentNode.MaxRange * currentNode.MaxRange;
+                    var color = Color.Lerp(Color.green, Color.red, (float)(distance / shortestMaxDistance));
+
                     if (link != null) // If the link already exists, no need to create a new link
                     {
-                        if (!currentLinks.Contains(link))
-                        {
-                            currentLinks.Add(link);
-                        }
+                        currentLinks.Add(link);
+                        link.Connection.SetColor(color);
 
                         continue;
                     }
@@ -131,6 +142,7 @@ namespace MapUtils.CommNet
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
+                        link.Connection.SetColor(color);
                     }
                 }
             }
@@ -158,16 +170,19 @@ namespace MapUtils.CommNet
             }
         }
 
-        private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance1)
+        private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance,
+            out Color color)
         {
             var distance = math.distancesq(node1.Position, node2.Position);
+            var maxDistance2 = node2.MaxRange * node2.MaxRange;
+            color = Color.Lerp(Color.green, Color.red, (float)(distance / Math.Min(maxDistance, maxDistance2)));
 
-            return distance < maxDistance1 || distance < node2.MaxRange * node2.MaxRange;
+            return distance < maxDistance && distance < maxDistance2;
         }
 
         private static CommNetLink GetLink(IGGuid comm1, IGGuid comm2)
         {
-            foreach (var link in LinkManager.Links)
+            foreach (var link in Links)
             {
                 if (link.Node1.Owner == comm1 && link.Node2.Owner == comm2)
                 {

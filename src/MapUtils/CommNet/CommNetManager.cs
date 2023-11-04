@@ -51,6 +51,8 @@ namespace MapUtils.CommNet
 
             obj.transform.parent = MapLookup[guid1].transform;
             obj.layer = LayerMask.NameToLayer("Map");
+
+            link.Connection = connection;
             
             connection.Setup(MapLookup[guid1], MapLookup[guid2]);
             Connections.Add(connection);
