@@ -2,11 +2,13 @@
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim.impl;
+using UnityEngine;
 
 namespace MapUtils.CommNet
 {
     public static class CommNetManager
     {
+        private const string MapLayer = "Map";
         private static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("CommNet Manager");
         private static readonly List<CommNetMapConnection> Connections = new();
 
@@ -44,10 +46,13 @@ namespace MapUtils.CommNet
             }
 
             // Otherwise create a map connection component and set it up
-            var obj = MapLookup[guid1];
+            var obj = new GameObject("CommNet Connection");
             var connection = obj.gameObject.AddComponent<CommNetMapConnection>();
 
-            connection.Setup(obj, MapLookup[guid2]);
+            obj.transform.parent = MapLookup[guid1].transform;
+            obj.layer = LayerMask.NameToLayer("Map");
+            
+            connection.Setup(MapLookup[guid1], MapLookup[guid2]);
             Connections.Add(connection);
 
             return true;
