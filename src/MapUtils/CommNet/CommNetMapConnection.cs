@@ -52,6 +52,16 @@ namespace MapUtils.CommNet
             _renderer.SetPositions(positions);
         }
 
+        public void SetColor(Color color)
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+            
+            _renderer.material.color = color;
+        }
+        
         public void Destroy()
         {
             Destroy(gameObject);
