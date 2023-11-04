@@ -18,6 +18,9 @@ namespace MapUtils.CommNet
         {
             // force the map to update as each time the map gets initialized all objects get generated again
             IsInMapView = true;
+
+            // Don't do anything if the CommNet lines are disabled
+            if (MapUtilsPlugin.CommNetModeEntry.Value == CommNetMode.Disabled) return;
             CommNetManager.RefreshLinks();
         }
 
