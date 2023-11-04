@@ -23,7 +23,7 @@ public class MapUtilsPlugin : BaseSpaceWarpPlugin
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public static MapUtilsPlugin Instance { get; set; }
 
-    public static ConfigEntry<bool> ConfigEntry { get; private set; }
+    public static ConfigEntry<CommNetMode> CommNetModeEntry { get; private set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -39,13 +39,33 @@ public class MapUtilsPlugin : BaseSpaceWarpPlugin
         // Start the event listener
         EventListener.RegisterEvents();
 
-        ConfigEntry = Config.Bind("MapUtils Section", "Use path", false, "Only display commnet paths to the source node, instead of all paths between all vessels.");
+        CommNetModeEntry = Config.Bind("MapUtils Section", "Use path", CommNetMode.All,
+            "Set the display mode for the CommNet lines");
+        CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
 
         Logger.LogInfo($"Initialized MapUtils");
     }
 
     public void Update()
     {
-        LinkManager.UpdateConnections();
+        if (CommNetModeEntry.Value != CommNetMode.Disabled)
+        {
+            LinkManager.UpdateConnections();
+        }
+    }
+
+    private void OnUpdateCommNetMode(object entry, EventArgs _)
+    {
+        var configEntry = (ConfigEntry<CommNetMode>)entry;
+
+        if (configEntry.Value != CommNetMode.Disabled) return;
+
+        // Remove all links
+        foreach (var link in LinkManager.Links)
+        {
+            CommNetManager.RemoveLink(link);
+        }
+
+        LinkManager.Links.Clear();
     }
 }

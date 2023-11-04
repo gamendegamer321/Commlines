@@ -34,7 +34,7 @@ namespace MapUtils.CommNet
 
             _updatingGraph = false;
 
-            List<CommNetLink> currentLinks = MapUtilsPlugin.ConfigEntry.Value
+            List<CommNetLink> currentLinks = MapUtilsPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
                 ? GeneratePaths(_graph, _nodes)
                 : GenerateAllConnections(_nodes);
 
