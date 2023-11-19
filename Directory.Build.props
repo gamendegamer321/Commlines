@@ -35,7 +35,7 @@
 
     <!-- Define the main target -->
     <Target Label="Reading properties from swinfo.json" Name="ReadPropertiesFromJson" BeforeTargets="PreBuildEvent">
-        <JsonPeek ContentPath="$(SolutionDir)/maputils/swinfo.json" Query="$">
+        <JsonPeek ContentPath="$(SolutionDir)/commnetutils/swinfo.json" Query="$">
             <Output TaskParameter="Result" ItemName="Swinfo"/>
         </JsonPeek>
 

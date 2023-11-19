@@ -1,27 +1,27 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using MapUtils.CommNet;
-using MapUtils.Patches;
+using CommNetUtils.CommNet;
+using CommNetUtils.Patches;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
 
-namespace MapUtils;
+namespace CommNetUtils;
 
-[BepInPlugin("com.gamendegamer.maputils", "MapUtils", "1.0.1")]
+[BepInPlugin("com.gamendegamer.commutils", "CommNetUtils", ModVer)]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
-public class MapUtilsPlugin : BaseSpaceWarpPlugin
+public class CommNetUtilsPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
     // ReSharper disable UnusedMember.Global
-    public const string ModGuid = "com.gamendegamer.maputils";
-    public const string ModName = "MapUtils";
-    public const string ModVer = "1.0.1";
+    public const string ModGuid = "com.gamendegamer.commutils";
+    public const string ModName = "CommNetUtils";
+    public const string ModVer = "1.0.0";
     // ReSharper restore UnusedMember.Global
 
     // Singleton instance of the plugin class
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public static MapUtilsPlugin Instance { get; set; }
+    public static CommNetUtilsPlugin Instance { get; set; }
 
     public static ConfigEntry<CommNetMode> CommNetModeEntry { get; private set; }
 
@@ -39,11 +39,11 @@ public class MapUtilsPlugin : BaseSpaceWarpPlugin
         // Start the event listener
         EventListener.RegisterEvents();
 
-        CommNetModeEntry = Config.Bind("MapUtils Section", "Use path", CommNetMode.All,
+        CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommNetMode.All,
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
 
-        Logger.LogInfo($"Initialized MapUtils");
+        Logger.LogInfo($"Initialized CommNet Utils");
     }
 
     public void Update()

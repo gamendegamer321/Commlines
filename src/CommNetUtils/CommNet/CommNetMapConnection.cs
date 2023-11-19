@@ -2,7 +2,7 @@
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public class CommNetMapConnection : MonoBehaviour
     {

@@ -1,12 +1,12 @@
 ﻿{
   "spec": "2.0",
-  "mod_id": "com.gamendegamer.maputils",
+  "mod_id": "com.gamendegamer.commutils",
   "author": "gamendegamer",
-  "name": "MapUtils",
+  "name": "CommNetUtils",
   "description": "Add CommNet lines to KSP 2",
   "source": "https://github.com/gamendegamer321/Commlines",
-  "version": "1.0.1",
-  "version_check": "https://raw.githubusercontent.com/gamendegamer321/Commlines/main/maputils/swinfo.json",
+  "version": "1.0.0",
+  "version_check": "https://raw.githubusercontent.com/gamendegamer321/Commlines/main/commnetutils/swinfo.json",
   "ksp2_version": {
     "min": "0.1.5",
     "max": "*"
