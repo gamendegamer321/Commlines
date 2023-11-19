@@ -1,8 +1,9 @@
-﻿using KSP.Map;
+﻿using CommNetUtils.CommNet;
+using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace CommNetUtils.CommNet
+namespace CommNetUtils.CommLines
 {
     public class CommNetMapConnection : MonoBehaviour
     {
@@ -29,7 +30,7 @@ namespace CommNetUtils.CommNet
 
         private void OnDestroy()
         {
-            CommNetManager.Destroyed(this);
+            PluginCommNetManager.Destroyed(this);
             Destroy(_renderer);
         }
 
@@ -44,7 +45,7 @@ namespace CommNetUtils.CommNet
 
             // Create the line renderer
             _renderer = gameObject.AddComponent<LineRenderer>();
-            _renderer.material = MaterialManager.Material;
+            _renderer.material = PluginMaterials.CommLineCommLineMaterial;
             _renderer.widthMultiplier = Width;
             _renderer.positionCount = 2;
             

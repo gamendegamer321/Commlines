@@ -1,12 +1,13 @@
 ﻿using BepInEx.Logging;
+using CommNetUtils.CommNet;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace CommNetUtils.CommNet
+namespace CommNetUtils.CommLines
 {
-    public static class CommNetManager
+    public static class PluginCommNetManager
     {
         private const string MapLayer = "Map";
         private static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("CommNet Manager");
@@ -50,7 +51,7 @@ namespace CommNetUtils.CommNet
             var connection = obj.gameObject.AddComponent<CommNetMapConnection>();
 
             obj.transform.parent = MapLookup[guid1].transform;
-            obj.layer = LayerMask.NameToLayer("Map");
+            obj.layer = LayerMask.NameToLayer(MapLayer);
 
             link.Connection = connection;
             

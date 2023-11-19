@@ -1,4 +1,5 @@
-﻿using KSP.Sim;
+﻿using CommNetUtils.CommLines;
+using KSP.Sim;
 using KSP.Sim.impl;
 using Unity.Mathematics;
 using UnityEngine;
@@ -87,7 +88,7 @@ namespace CommNetUtils.CommNet
                     link = new CommNetLink(currentNode, nextNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommNetManager.AddLink(link))
+                    if (PluginCommNetManager.AddLink(link))
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
@@ -138,7 +139,7 @@ namespace CommNetUtils.CommNet
                     link = new CommNetLink(previousNode, currentNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommNetManager.AddLink(link))
+                    if (PluginCommNetManager.AddLink(link))
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
@@ -160,7 +161,7 @@ namespace CommNetUtils.CommNet
                 {
                     toRemove.Add(link);
 
-                    CommNetManager.RemoveLink(link);
+                    PluginCommNetManager.RemoveLink(link);
                 }
             }
 

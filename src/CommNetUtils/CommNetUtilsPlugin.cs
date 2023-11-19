@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using CommNetUtils.CommLines;
 using HarmonyLib;
 using CommNetUtils.CommNet;
 using CommNetUtils.Patches;
@@ -42,6 +43,9 @@ public class CommNetUtilsPlugin : BaseSpaceWarpPlugin
         CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommNetMode.All,
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
+        
+        Logger.LogInfo("Creating materials");
+        PluginMaterials.GenerateMaterials();
 
         Logger.LogInfo($"Initialized CommNet Utils");
     }
@@ -63,7 +67,7 @@ public class CommNetUtilsPlugin : BaseSpaceWarpPlugin
         // Remove all links
         foreach (var link in LinkManager.Links)
         {
-            CommNetManager.RemoveLink(link);
+            PluginCommNetManager.RemoveLink(link);
         }
 
         LinkManager.Links.Clear();
