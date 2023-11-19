@@ -1,4 +1,4 @@
-﻿namespace MapUtils.CommNet;
+﻿namespace CommNetUtils.CommNet;
 
 public enum CommNetMode
 {

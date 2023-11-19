@@ -3,7 +3,7 @@ using KSP.Sim.impl;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public static class LinkManager
     {
@@ -34,7 +34,7 @@ namespace MapUtils.CommNet
 
             _updatingGraph = false;
 
-            List<CommNetLink> currentLinks = MapUtilsPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
+            List<CommNetLink> currentLinks = CommNetUtilsPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
                 ? GeneratePaths(_graph, _nodes)
                 : GenerateAllConnections(_nodes);
 

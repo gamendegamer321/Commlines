@@ -1,7 +1,7 @@
 ﻿using KSP.Game;
 using KSP.Messages;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public static class EventListener
     { 
@@ -20,7 +20,7 @@ namespace MapUtils.CommNet
             IsInMapView = true;
 
             // Don't do anything if the CommNet lines are disabled
-            if (MapUtilsPlugin.CommNetModeEntry.Value == CommNetMode.Disabled) return;
+            if (CommNetUtilsPlugin.CommNetModeEntry.Value == CommNetMode.Disabled) return;
             CommNetManager.RefreshLinks();
         }
 

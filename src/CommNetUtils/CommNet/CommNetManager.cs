@@ -4,7 +4,7 @@ using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public static class CommNetManager
     {

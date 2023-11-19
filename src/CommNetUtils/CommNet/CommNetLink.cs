@@ -1,6 +1,6 @@
 ﻿using KSP.Sim;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public class CommNetLink
     {

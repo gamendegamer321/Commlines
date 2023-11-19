@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MapUtils.CommNet
+namespace CommNetUtils.CommNet
 {
     public static class MaterialManager
     {
