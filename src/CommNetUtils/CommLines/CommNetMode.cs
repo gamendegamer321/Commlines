@@ -1,4 +1,4 @@
-﻿namespace CommNetUtils.CommNet;
+﻿namespace CommNetUtils.CommLines;
 
 public enum CommNetMode
 {

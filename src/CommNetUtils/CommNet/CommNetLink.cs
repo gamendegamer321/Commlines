@@ -1,4 +1,5 @@
-﻿using KSP.Sim;
+﻿using CommNetUtils.CommLines;
+using KSP.Sim;
 
 namespace CommNetUtils.CommNet
 {
