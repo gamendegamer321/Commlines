@@ -24,7 +24,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public static CommLinesPlugin Instance { get; set; }
 
-    public static ConfigEntry<CommNetMode> CommNetModeEntry { get; private set; }
+    public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -40,7 +40,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         // Start the event listener
         EventListener.RegisterEvents();
 
-        CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommNetMode.All,
+        CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommLineMode.All,
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
         
@@ -52,7 +52,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     public void Update()
     {
-        if (CommNetModeEntry.Value != CommNetMode.Disabled)
+        if (CommNetModeEntry.Value != CommLineMode.Disabled)
         {
             LinkManager.UpdateConnections();
         }
@@ -60,14 +60,14 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     private void OnUpdateCommNetMode(object entry, EventArgs _)
     {
-        var configEntry = (ConfigEntry<CommNetMode>)entry;
+        var configEntry = (ConfigEntry<CommLineMode>)entry;
 
-        if (configEntry.Value != CommNetMode.Disabled) return;
+        if (configEntry.Value != CommLineMode.Disabled) return;
 
         // Remove all links
         foreach (var link in LinkManager.Links)
         {
-            PluginCommNetManager.RemoveLink(link);
+            CommLineManager.RemoveLink(link);
         }
 
         LinkManager.Links.Clear();

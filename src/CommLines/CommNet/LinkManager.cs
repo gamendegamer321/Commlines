@@ -35,7 +35,7 @@ namespace CommLines.CommNet
 
             _updatingGraph = false;
 
-            List<CommNetLink> currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
+            List<CommNetLink> currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly
                 ? GeneratePaths(_graph, _nodes)
                 : GenerateAllConnections(_nodes);
 
@@ -88,7 +88,7 @@ namespace CommLines.CommNet
                     link = new CommNetLink(currentNode, nextNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (PluginCommNetManager.AddLink(link))
+                    if (CommLineManager.AddLink(link))
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
@@ -139,7 +139,7 @@ namespace CommLines.CommNet
                     link = new CommNetLink(previousNode, currentNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (PluginCommNetManager.AddLink(link))
+                    if (CommLineManager.AddLink(link))
                     {
                         currentLinks.Add(link);
                         Links.Add(link);
@@ -161,7 +161,7 @@ namespace CommLines.CommNet
                 {
                     toRemove.Add(link);
 
-                    PluginCommNetManager.RemoveLink(link);
+                    CommLineManager.RemoveLink(link);
                 }
             }
 

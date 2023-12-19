@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CommLines.CommLines
 {
-    public class CommNetMapConnection : MonoBehaviour
+    public class CommLineConnection : MonoBehaviour
     {
         private const float Width = 0.03f;
 
@@ -30,7 +30,7 @@ namespace CommLines.CommLines
 
         private void OnDestroy()
         {
-            PluginCommNetManager.Destroyed(this);
+            CommLineManager.Destroyed(this);
             Destroy(_renderer);
         }
 
