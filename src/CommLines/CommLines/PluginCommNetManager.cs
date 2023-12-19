@@ -1,11 +1,11 @@
 ﻿using BepInEx.Logging;
-using CommNetUtils.CommNet;
+using CommLines.CommNet;
 using KSP.Game;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace CommNetUtils.CommLines
+namespace CommLines.CommLines
 {
     public static class PluginCommNetManager
     {

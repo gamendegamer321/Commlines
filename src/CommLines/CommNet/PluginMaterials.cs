@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CommNetUtils.CommNet
+namespace CommLines.CommNet
 {
     public static class PluginMaterials
     {

@@ -1,10 +1,10 @@
-﻿using CommNetUtils.CommLines;
+﻿using CommLines.CommLines;
 using KSP.Sim;
 using KSP.Sim.impl;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace CommNetUtils.CommNet
+namespace CommLines.CommNet
 {
     public static class LinkManager
     {
@@ -35,7 +35,7 @@ namespace CommNetUtils.CommNet
 
             _updatingGraph = false;
 
-            List<CommNetLink> currentLinks = CommNetUtilsPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
+            List<CommNetLink> currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommNetMode.PathOnly
                 ? GeneratePaths(_graph, _nodes)
                 : GenerateAllConnections(_nodes);
 

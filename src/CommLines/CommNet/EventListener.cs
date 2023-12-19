@@ -1,9 +1,9 @@
-﻿using CommNetUtils.CommLines;
-using CommNetUtils.CommNet;
+﻿using CommLines.CommLines;
+using CommLines.CommNet;
 using KSP.Game;
 using KSP.Messages;
 
-namespace CommNetUtils
+namespace CommLines
 {
     public static class EventListener
     { 
@@ -22,7 +22,7 @@ namespace CommNetUtils
             IsInMapView = true;
 
             // Don't do anything if the CommNet lines are disabled
-            if (CommNetUtilsPlugin.CommNetModeEntry.Value == CommNetMode.Disabled) return;
+            if (CommLinesPlugin.CommNetModeEntry.Value == CommNetMode.Disabled) return;
             PluginCommNetManager.RefreshLinks();
         }
 

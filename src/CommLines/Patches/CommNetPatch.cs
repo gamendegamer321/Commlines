@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using KSP.Sim;
-using CommNetUtils.CommNet;
+using CommLines.CommNet;
 
-namespace CommNetUtils.Patches
+namespace CommLines.Patches
 {
     [HarmonyPatch(typeof(ConnectionGraph))]
     [HarmonyPatch("RebuildConnectionGraph")]
