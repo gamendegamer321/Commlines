@@ -34,8 +34,8 @@ namespace CommNetUtils.CommLines
                 return false;
             }
 
-            // The first node might be the KSC, in that case we have to swap out the guid (source node uses a separate guid)
-            var guid1 = link.Node1.Owner == LinkManager.SourceGuid ? _mapCore.HomeworldGUID : link.Node1.Owner;
+            // The first node might be the KSC, in that case we have to swap out the guid (source node uses a separate guid?)
+            var guid1 = link.Node1.Owner == LinkManager.SourceGuid ? _mapCore.KSCGUID : link.Node1.Owner;
             var guid2 = link.Node2.Owner;
 
             var mapConnection = GetMapConnection(guid1, guid2);
