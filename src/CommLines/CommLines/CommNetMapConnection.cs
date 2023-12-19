@@ -1,9 +1,9 @@
-﻿using CommNetUtils.CommNet;
+﻿using CommLines.CommNet;
 using KSP.Map;
 using KSP.Sim.impl;
 using UnityEngine;
 
-namespace CommNetUtils.CommLines
+namespace CommLines.CommLines
 {
     public class CommNetMapConnection : MonoBehaviour
     {

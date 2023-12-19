@@ -1,7 +1,7 @@
-﻿using CommNetUtils.CommLines;
+﻿using CommLines.CommLines;
 using KSP.Sim;
 
-namespace CommNetUtils.CommNet
+namespace CommLines.CommNet
 {
     public class CommNetLink
     {

@@ -1,28 +1,28 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using CommNetUtils.CommLines;
+using CommLines.CommLines;
 using HarmonyLib;
-using CommNetUtils.CommNet;
-using CommNetUtils.Patches;
+using CommLines.CommNet;
+using CommLines.Patches;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
 
-namespace CommNetUtils;
+namespace CommLines;
 
-[BepInPlugin("com.gamendegamer.commutils", "CommNetUtils", ModVer)]
+[BepInPlugin(ModGuid, ModName, ModVer)]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
-public class CommNetUtilsPlugin : BaseSpaceWarpPlugin
+public class CommLinesPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
     // ReSharper disable UnusedMember.Global
-    public const string ModGuid = "com.gamendegamer.commutils";
-    public const string ModName = "CommNetUtils";
-    public const string ModVer = "1.0.0";
+    public const string ModGuid = "com.gamendegamer.commlines";
+    public const string ModName = "CommLines";
+    public const string ModVer = "1.0.2";
     // ReSharper restore UnusedMember.Global
 
     // Singleton instance of the plugin class
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public static CommNetUtilsPlugin Instance { get; set; }
+    public static CommLinesPlugin Instance { get; set; }
 
     public static ConfigEntry<CommNetMode> CommNetModeEntry { get; private set; }
 
