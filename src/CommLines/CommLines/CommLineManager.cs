@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace CommLines.CommLines
 {
-    public static class PluginCommNetManager
+    public static class CommLineManager
     {
         private const string MapLayer = "Map";
         private static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("CommNet Manager");
-        private static readonly List<CommNetMapConnection> Connections = new();
+        private static readonly List<CommLineConnection> Connections = new();
 
         private static GameInstance Game => GameManager.Instance.Game;
         private static Dictionary<IGGuid, Map3DFocusItem> MapLookup => _mapCore.map3D.AllMapSelectableItems;
@@ -48,7 +48,7 @@ namespace CommLines.CommLines
 
             // Otherwise create a map connection component and set it up
             var obj = new GameObject("CommNet Connection");
-            var connection = obj.gameObject.AddComponent<CommNetMapConnection>();
+            var connection = obj.gameObject.AddComponent<CommLineConnection>();
 
             obj.transform.parent = MapLookup[guid1].transform;
             obj.layer = LayerMask.NameToLayer(MapLayer);
@@ -70,12 +70,12 @@ namespace CommLines.CommLines
             GetMapConnection(guid1, guid2)?.Destroy();
         }
 
-        public static void Destroyed(CommNetMapConnection connection)
+        public static void Destroyed(CommLineConnection connection)
         {
             Connections.Remove(connection);
         }
 
-        private static CommNetMapConnection GetMapConnection(IGGuid comm1, IGGuid comm2)
+        private static CommLineConnection GetMapConnection(IGGuid comm1, IGGuid comm2)
         {
             foreach (var link in Connections)
             {

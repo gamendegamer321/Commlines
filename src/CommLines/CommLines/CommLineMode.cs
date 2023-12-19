@@ -1,6 +1,6 @@
 ﻿namespace CommLines.CommLines;
 
-public enum CommNetMode
+public enum CommLineMode
 {
     Disabled,
     PathOnly,
