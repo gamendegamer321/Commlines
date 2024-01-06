@@ -1,7 +1,6 @@
 ﻿using BepInEx.Logging;
-using CommLines.CommNet;
 using KSP.Game;
-using KSP.Map;
+using KSP.Sim;
 using KSP.Sim.impl;
 using UnityEngine;
 
@@ -14,83 +13,83 @@ namespace CommLines.CommLines
         private static readonly List<CommLineConnection> Connections = new();
 
         private static GameInstance Game => GameManager.Instance.Game;
-        private static Dictionary<IGGuid, Map3DFocusItem> MapLookup => _mapCore.map3D.AllMapSelectableItems;
-        private static MapCore _mapCore;
 
-        public static void RefreshLinks()
-        {
-            foreach (var link in LinkManager.Links)
-            {
-                AddLink(link);
-            }
-        }
-
-        public static bool AddLink(CommNetLink link)
+        /// <summary>
+        /// Try to create a connection, or get the existing connection if it already exists.
+        /// </summary>
+        public static bool AddConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, out CommLineConnection connection)
         {
             // Try to get the map core
-            if (_mapCore == null && !Game.Map.TryGetMapCore(out _mapCore))
+            if (!Game.Map.TryGetMapCore(out var mapCore))
             {
                 Logger.LogError("Could not find map core");
+                connection = null;
                 return false;
             }
 
-            // The first node might be the KSC, in that case we have to swap out the guid (source node uses a separate guid?)
-            var guid1 = link.Node1.IsControlSource ? _mapCore.KSCGUID : link.Node1.Owner;
-            var guid2 = link.Node2.Owner;
+            var mapLookup = mapCore.map3D.AllMapSelectableItems;
 
-            var mapConnection = GetMapConnection(guid1, guid2);
+            // The node might be kerbal, in that case we have to swap out the guid with the KSC
+            var guid1 = node1.IsControlSource ? mapCore.KSCGUID : node1.Owner;
+            var guid2 = node2.IsControlSource ? mapCore.KSCGUID : node2.Owner;
 
             // If we already have a line for this link, no need to draw another
-            if (mapConnection != null)
-            {
-                return true;
-            }
+            if (TryGetMapConnection(guid1, guid2, out connection)) return true;
 
             // Otherwise create a map connection component and set it up
             var obj = new GameObject("CommNet Connection");
-            var connection = obj.gameObject.AddComponent<CommLineConnection>();
+            connection = obj.gameObject.AddComponent<CommLineConnection>();
 
-            obj.transform.parent = MapLookup[guid1].transform;
+            obj.transform.parent = mapLookup[guid1].transform;
             obj.layer = LayerMask.NameToLayer(MapLayer);
 
-            link.Connection = connection;
-            
-            connection.Setup(MapLookup[guid1], MapLookup[guid2]);
+            connection.Setup(mapLookup[guid1], mapLookup[guid2]);
             Connections.Add(connection);
 
             return true;
         }
-
-        public static void RemoveLink(CommNetLink link)
+        
+        public static void RemoveAll()
         {
-            // Remove the line if one is already created
-            var guid1 = link.Node1.IsControlSource ? _mapCore.HomeworldGUID : link.Node1.Owner;
-            var guid2 = link.Node2.Owner;
-
-            GetMapConnection(guid1, guid2)?.Destroy();
+            foreach (var connection in Connections)
+            {
+                connection.Destroy();
+            }
         }
 
+        public static void RemoveDisconnected(List<CommLineConnection> stillConnected)
+        {
+            var toRemove = Connections.Where(connection => !stillConnected.Contains(connection)).ToList();
+            foreach (var connection in toRemove)
+            {
+                connection.Destroy();
+            }
+        }
+        
         public static void Destroyed(CommLineConnection connection)
         {
             Connections.Remove(connection);
         }
 
-        private static CommLineConnection GetMapConnection(IGGuid comm1, IGGuid comm2)
+        private static bool TryGetMapConnection(IGGuid comm1, IGGuid comm2, out CommLineConnection connection)
         {
             foreach (var link in Connections)
             {
                 if (link.Source == comm1 && link.Target == comm2)
                 {
-                    return link;
+                    connection = link;
+                    return true;
                 }
 
                 if (link.Source == comm2 && link.Target == comm1)
                 {
-                    return link;
+                    connection = link;
+                    return true;
                 }
             }
 
-            return null;
+            connection = null;
+            return false;
         }
     }
 }

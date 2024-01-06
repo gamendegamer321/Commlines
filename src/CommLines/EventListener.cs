@@ -1,4 +1,5 @@
 ﻿using CommLines.CommLines;
+using CommLines.CommNet;
 using KSP.Game;
 using KSP.Messages;
 
@@ -21,8 +22,8 @@ namespace CommLines
             IsInMapView = true;
 
             // Don't do anything if the CommNet lines are disabled
-            if (CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return; // TODO: make lines appear the moment you open map mod
-            CommLineManager.RefreshLinks();
+            if (CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return;
+            LinkManager.UpdateConnections();
         }
 
         private static void OnMapViewLeft(MessageCenterMessage _)

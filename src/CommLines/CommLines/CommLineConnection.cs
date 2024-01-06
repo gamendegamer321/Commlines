@@ -12,36 +12,38 @@ namespace CommLines.CommLines
         public IGGuid Source { get; private set; }
         public IGGuid Target { get; private set; }
 
-        private Map3DFocusItem _sourceData;
-        private Map3DFocusItem _targetData;
+        private Map3DFocusItem _mapItem1;
+        private Map3DFocusItem _mapItem2;
 
         private LineRenderer _renderer;
+        private bool _initialized;
         
         public void Update()
         {
-            if (_renderer == null)
+            if (!_initialized)
             {
                 return;
             }
 
-            var positions = new[] { _sourceData.transform.position, _targetData.transform.position };
+            // Keep updating the position each frame with the map position
+            var positions = new[] { _mapItem1.transform.position, _mapItem2.transform.position };
             _renderer.SetPositions(positions);
         }
 
         private void OnDestroy()
         {
+            // When this object gets destroyed, make sure the CommLineManager knows about it
             CommLineManager.Destroyed(this);
-            Destroy(_renderer);
         }
 
-        public void Setup(Map3DFocusItem thisNode, Map3DFocusItem targetNode)
+        public void Setup(Map3DFocusItem node1, Map3DFocusItem node2)
         {
             // Set the data
-            Source = thisNode.AssociatedMapItem.SimGUID;
-            Target = targetNode.AssociatedMapItem.SimGUID;
+            Source = node1.AssociatedMapItem.SimGUID;
+            Target = node2.AssociatedMapItem.SimGUID;
 
-            _sourceData = thisNode;
-            _targetData = targetNode;
+            _mapItem1 = node1;
+            _mapItem2 = node2;
 
             // Create the line renderer
             _renderer = gameObject.AddComponent<LineRenderer>();
@@ -49,13 +51,15 @@ namespace CommLines.CommLines
             _renderer.widthMultiplier = Width;
             _renderer.positionCount = 2;
             
-            var positions = new[] { _sourceData.transform.position, _targetData.transform.position };
+            var positions = new[] { _mapItem1.transform.position, _mapItem2.transform.position };
             _renderer.SetPositions(positions);
+
+            _initialized = true; // Only now allow the renderer to update
         }
 
         public void SetColor(Color color)
         {
-            if (_renderer == null)
+            if (!_initialized)
             {
                 return;
             }
