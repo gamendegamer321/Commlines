@@ -1,6 +1,7 @@
 ﻿using CommLines.CommLines;
 using KSP.Sim;
 using KSP.Sim.impl;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,47 +9,58 @@ namespace CommLines.CommNet
 {
     public static class LinkManager
     {
-        private static List<ConnectionGraphNode> _nodes = new();
-        private static ConnectionGraph _graph;
-        private static bool _updatingGraph;
-
         public static readonly List<CommNetLink> Links = new();
-        public static IGGuid SourceGuid { get; private set; }
 
-        public static void RefreshingCommnet(ConnectionGraph currentGraph, List<ConnectionGraphNode> currentNodes,
-            ConnectionGraphNode sourceNode)
+        private static ConnectionGraph _graph;
+        private static List<ConnectionGraphNode> _nodes;
+        private static NativeArray<ConnectionGraph.ConnectionGraphJobNode> _jobNodes;
+        private static NativeArray<int> _previousIndices;
+
+        private static bool _isRefreshing;
+
+        /// <summary>
+        /// Whenever the CommNet starts refreshing, store all the information of the CommNet
+        /// so we can calculate the connectivity or all connections after
+        /// </summary>
+        public static void RefreshingCommnet(ConnectionGraph graph, List<ConnectionGraphNode> nodes,
+            NativeArray<ConnectionGraph.ConnectionGraphJobNode> jobNodes, NativeArray<int> previousIndices)
         {
-            // Store everything to use when the graph is done updating
-            _graph = currentGraph;
-            _nodes = currentNodes;
-            SourceGuid = sourceNode.Owner;
-            _updatingGraph = true;
+            _graph = graph;
+            _nodes = nodes;
+            _jobNodes = jobNodes;
+            _previousIndices = previousIndices;
+
+            _isRefreshing = true;
+        }
+
+        public static void OnUpdate()
+        {
+            if (!_isRefreshing || !_graph.HasResult) return;
+
+            // When the game has finished updating the CommNet its our turn
+            CommNetJobHandler.CalculateNetwork(_nodes, _jobNodes, _previousIndices);
+            _isRefreshing = false;
         }
 
         public static void UpdateConnections()
         {
-            // We only want to update the connection after the game has updated it's CommNet connections.
-            if (!EventListener.IsInMapView || !_updatingGraph || !_graph.HasResult)
-            {
-                return;
-            }
+            // Only need to update this when we are in mapview and have CommLines enabled
+            if (!EventListener.IsInMapView || CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return;
 
-            _updatingGraph = false;
-
-            List<CommNetLink> currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly
-                ? GeneratePaths(_graph, _nodes)
-                : GenerateAllConnections(_nodes);
+            var currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly
+                ? GeneratePaths()
+                : GenerateAllConnections();
 
             RemoveUnusedLinks(currentLinks);
         }
 
-        private static List<CommNetLink> GenerateAllConnections(List<ConnectionGraphNode> nodes)
+        private static List<CommNetLink> GenerateAllConnections()
         {
-            List<CommNetLink> currentLinks = new List<CommNetLink>();
+            var currentLinks = new List<CommNetLink>();
 
-            for (int i = 0; i < nodes.Count; i++)
+            for (var i = 0; i < _nodes.Count; i++)
             {
-                var currentNode = nodes[i];
+                var currentNode = _nodes[i];
 
                 if (!currentNode.IsActive) // If the node is not active, it can not be connected
                 {
@@ -60,9 +72,9 @@ namespace CommLines.CommNet
                     currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
 
                 // We start one higher than the previous as this is the first node to check it against
-                for (int j = i + 1; j < nodes.Count; j++)
+                for (var j = i + 1; j < _nodes.Count; j++)
                 {
-                    var nextNode = nodes[j];
+                    var nextNode = _nodes[j];
 
                     if (!nextNode.IsActive) // If the node is inactive, it can never connect
                     {
@@ -88,64 +100,51 @@ namespace CommLines.CommNet
                     link = new CommNetLink(currentNode, nextNode);
 
                     // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommLineManager.AddLink(link))
-                    {
-                        currentLinks.Add(link);
-                        Links.Add(link);
-                        link.Connection.SetColor(color);
-                    }
+                    if (!CommLineManager.AddLink(link)) continue;
+                    
+                    currentLinks.Add(link);
+                    Links.Add(link);
+                    link.Connection.SetColor(color);
                 }
             }
 
             return currentLinks;
         }
 
-        private static List<CommNetLink> GeneratePaths(ConnectionGraph graph, List<ConnectionGraphNode> nodes)
+        private static List<CommNetLink> GeneratePaths()
         {
-            List<CommNetLink> currentLinks = new List<CommNetLink>();
+            var currentLinks = new List<CommNetLink>();
 
-            foreach (var node in nodes)
+            for (var i = 0; i < _nodes.Count; i++)
             {
-                List<ConnectionGraphNode> path = new List<ConnectionGraphNode>();
-                if (!graph.TryGetPathFromSourceNode(node, ref path))
+                var node = _nodes[i];
+                var previousIndex = _previousIndices[i];
+                
+                if (previousIndex < 0 || previousIndex > _nodes.Count) continue;
+
+                var previousNode = _nodes[previousIndex];
+                
+                var link = GetLink(previousNode.Owner, node.Owner);
+                var connectivity = CommNetJobHandler.GetConnectivity(i);
+
+                var color = GetColorForConnectivity(connectivity);
+
+                if (link != null) // If the link already exists, no need to create a new link
                 {
-                    // If no path was found, continue to the next node
+                    currentLinks.Add(link);
+                    link.Connection.SetColor(color);
+
                     continue;
                 }
 
-                // We start at 1, so we can get the current node and the previous node when going over the path
-                for (int i = 1; i < path.Count; i++)
-                {
-                    var previousNode = path[i - 1];
-                    var currentNode = path[i];
+                link = new CommNetLink(previousNode, node);
 
-                    var link = GetLink(previousNode.Owner, currentNode.Owner);
+                // Only add it to the discovered links if it has been successfully placed on the map
+                if (!CommLineManager.AddLink(link)) continue;
 
-                    // We still want to know the color
-                    var distance = math.distancesq(previousNode.Position, currentNode.Position);
-                    var shortestMaxDistance = previousNode.MaxRange < currentNode.MaxRange
-                        ? previousNode.MaxRange * previousNode.MaxRange
-                        : currentNode.MaxRange * currentNode.MaxRange;
-                    var color = Color.Lerp(Color.green, Color.red, (float)(distance / shortestMaxDistance));
-
-                    if (link != null) // If the link already exists, no need to create a new link
-                    {
-                        currentLinks.Add(link);
-                        link.Connection.SetColor(color);
-
-                        continue;
-                    }
-
-                    link = new CommNetLink(previousNode, currentNode);
-
-                    // Only add it to the discovered links if it has been successfully placed on the map
-                    if (CommLineManager.AddLink(link))
-                    {
-                        currentLinks.Add(link);
-                        Links.Add(link);
-                        link.Connection.SetColor(color);
-                    }
-                }
+                currentLinks.Add(link);
+                Links.Add(link);
+                link.Connection.SetColor(color);
             }
 
             return currentLinks;
@@ -153,16 +152,12 @@ namespace CommLines.CommNet
 
         private static void RemoveUnusedLinks(List<CommNetLink> stillInUse)
         {
-            List<CommNetLink> toRemove = new List<CommNetLink>();
+            var toRemove = new List<CommNetLink>();
 
-            foreach (var link in Links)
+            foreach (var link in Links.Where(link => !stillInUse.Contains(link)))
             {
-                if (!stillInUse.Contains(link))
-                {
-                    toRemove.Add(link);
-
-                    CommLineManager.RemoveLink(link);
-                }
+                toRemove.Add(link);
+                CommLineManager.RemoveLink(link);
             }
 
             foreach (var link in toRemove)
@@ -198,5 +193,7 @@ namespace CommLines.CommNet
 
             return null;
         }
+        
+        private static Color GetColorForConnectivity(float connectivity) => Color.HSVToRGB(connectivity / 3f, 1, 1);
     }
 }

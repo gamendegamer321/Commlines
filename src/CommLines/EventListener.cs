@@ -2,7 +2,7 @@
 using KSP.Game;
 using KSP.Messages;
 
-namespace CommLines.CommNet
+namespace CommLines
 {
     public static class EventListener
     { 
@@ -21,7 +21,7 @@ namespace CommLines.CommNet
             IsInMapView = true;
 
             // Don't do anything if the CommNet lines are disabled
-            if (CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return;
+            if (CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return; // TODO: make lines appear the moment you open map mod
             CommLineManager.RefreshLinks();
         }
 
