@@ -14,14 +14,10 @@ namespace CommLines;
 public class CommLinesPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
-    // ReSharper disable UnusedMember.Global
     public const string ModGuid = "com.gamendegamer.commlines";
     public const string ModName = "CommLines";
     public const string ModVer = "1.0.2";
-    // ReSharper restore UnusedMember.Global
-
-    // Singleton instance of the plugin class
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    
     public static CommLinesPlugin Instance { get; set; }
 
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
@@ -36,6 +32,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
         // Create the patch
         Harmony.CreateAndPatchAll(typeof(CommNetPatch));
+        Harmony.CreateAndPatchAll(typeof(SessionManagerPatch));
 
         // Start the event listener
         EventListener.RegisterEvents();
@@ -47,15 +44,15 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         Logger.LogInfo("Creating materials");
         PluginMaterials.GenerateMaterials();
 
-        Logger.LogInfo($"Initialized CommNet Utils");
+        Logger.LogInfo("Initialized CommNet Utils");
     }
 
     public void Update()
     {
-        if (CommNetModeEntry.Value != CommLineMode.Disabled)
-        {
-            LinkManager.UpdateConnections();
-        }
+        if (CommNetModeEntry == null || CommNetModeEntry.Value == CommLineMode.Disabled) return;
+        
+        LinkManager.OnUpdate();
+        CommNetJobHandler.OnUpdate();
     }
 
     private void OnUpdateCommNetMode(object entry, EventArgs _)

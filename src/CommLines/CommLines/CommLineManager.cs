@@ -35,7 +35,7 @@ namespace CommLines.CommLines
             }
 
             // The first node might be the KSC, in that case we have to swap out the guid (source node uses a separate guid?)
-            var guid1 = link.Node1.Owner == LinkManager.SourceGuid ? _mapCore.KSCGUID : link.Node1.Owner;
+            var guid1 = link.Node1.IsControlSource ? _mapCore.KSCGUID : link.Node1.Owner;
             var guid2 = link.Node2.Owner;
 
             var mapConnection = GetMapConnection(guid1, guid2);
@@ -64,7 +64,7 @@ namespace CommLines.CommLines
         public static void RemoveLink(CommNetLink link)
         {
             // Remove the line if one is already created
-            var guid1 = link.Node1.Owner == LinkManager.SourceGuid ? _mapCore.HomeworldGUID : link.Node1.Owner;
+            var guid1 = link.Node1.IsControlSource ? _mapCore.HomeworldGUID : link.Node1.Owner;
             var guid2 = link.Node2.Owner;
 
             GetMapConnection(guid1, guid2)?.Destroy();
