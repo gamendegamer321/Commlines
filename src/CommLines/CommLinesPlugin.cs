@@ -17,7 +17,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     public const string ModGuid = "com.gamendegamer.commlines";
     public const string ModName = "CommLines";
     public const string ModVer = "1.0.2";
-    
+
     public static CommLinesPlugin Instance { get; set; }
 
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
@@ -40,7 +40,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommLineMode.All,
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
-        
+
         Logger.LogInfo("Creating materials");
         PluginMaterials.GenerateMaterials();
 
@@ -50,23 +50,19 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     public void Update()
     {
         if (CommNetModeEntry == null || CommNetModeEntry.Value == CommLineMode.Disabled) return;
-        
+
         LinkManager.OnUpdate();
         CommNetJobHandler.OnUpdate();
     }
 
-    private void OnUpdateCommNetMode(object entry, EventArgs _)
+    private static void OnUpdateCommNetMode(object entry, EventArgs _)
     {
         var configEntry = (ConfigEntry<CommLineMode>)entry;
 
         if (configEntry.Value != CommLineMode.Disabled) return;
 
-        // Remove all links
-        foreach (var link in LinkManager.Links)
-        {
-            CommLineManager.RemoveLink(link);
-        }
-
-        LinkManager.Links.Clear();
+        // Remove all links and the job memory when disabling CommLines
+        CommLineManager.RemoveAll();
+        CommNetJobHandler.DisposeAll();
     }
 }

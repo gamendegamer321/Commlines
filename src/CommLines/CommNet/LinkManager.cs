@@ -9,8 +9,6 @@ namespace CommLines.CommNet
 {
     public static class LinkManager
     {
-        public static readonly List<CommNetLink> Links = new();
-
         private static ConnectionGraph _graph;
         private static List<ConnectionGraphNode> _nodes;
         private static NativeArray<ConnectionGraph.ConnectionGraphJobNode> _jobNodes;
@@ -44,19 +42,20 @@ namespace CommLines.CommNet
 
         public static void UpdateConnections()
         {
-            // Only need to update this when we are in mapview and have CommLines enabled
-            if (!EventListener.IsInMapView || CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return;
+            // Only need to update this when we are in mapview, the previousIndices array is up to date and have CommLines enabled
+            if (!EventListener.IsInMapView || !_graph.HasResult ||
+                CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.Disabled) return;
 
             var currentLinks = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly
                 ? GeneratePaths()
                 : GenerateAllConnections();
 
-            RemoveUnusedLinks(currentLinks);
+            CommLineManager.RemoveDisconnected(currentLinks);
         }
 
-        private static List<CommNetLink> GenerateAllConnections()
+        private static List<CommLineConnection> GenerateAllConnections()
         {
-            var currentLinks = new List<CommNetLink>();
+            var currentConnections = new List<CommLineConnection>();
 
             for (var i = 0; i < _nodes.Count; i++)
             {
@@ -67,9 +66,8 @@ namespace CommLines.CommNet
                     continue;
                 }
 
-                var maxDistance =
-                    currentNode.MaxRange *
-                    currentNode.MaxRange; // Calculate here so we don't have to do it within the next loop
+                // Calculate here so we don't have to do it within the next loop
+                var maxDistance = currentNode.MaxRange * currentNode.MaxRange;
 
                 // We start one higher than the previous as this is the first node to check it against
                 for (var j = i + 1; j < _nodes.Count; j++)
@@ -87,83 +85,41 @@ namespace CommLines.CommNet
                         continue;
                     }
 
-                    var link = GetLink(currentNode.Owner, nextNode.Owner);
+                    // Try to create or get the connection, if that's not possible go to the next
+                    if (!CommLineManager.AddConnection(currentNode, nextNode, out var connection)) continue;
 
-                    if (link != null) // If the link already exists, no need to create a new link
-                    {
-                        currentLinks.Add(link);
-                        link.Connection.SetColor(color);
-
-                        continue;
-                    }
-
-                    link = new CommNetLink(currentNode, nextNode);
-
-                    // Only add it to the discovered links if it has been successfully placed on the map
-                    if (!CommLineManager.AddLink(link)) continue;
-                    
-                    currentLinks.Add(link);
-                    Links.Add(link);
-                    link.Connection.SetColor(color);
+                    currentConnections.Add(connection);
+                    connection.SetColor(color);
                 }
             }
 
-            return currentLinks;
+            return currentConnections;
         }
 
-        private static List<CommNetLink> GeneratePaths()
+        private static List<CommLineConnection> GeneratePaths()
         {
-            var currentLinks = new List<CommNetLink>();
+            var currentConnections = new List<CommLineConnection>();
 
             for (var i = 0; i < _nodes.Count; i++)
             {
                 var node = _nodes[i];
                 var previousIndex = _previousIndices[i];
-                
+
                 if (previousIndex < 0 || previousIndex > _nodes.Count) continue;
 
                 var previousNode = _nodes[previousIndex];
-                
-                var link = GetLink(previousNode.Owner, node.Owner);
-                var connectivity = CommNetJobHandler.GetConnectivity(i);
 
+                var connectivity = CommNetJobHandler.GetConnectivity(i);
                 var color = GetColorForConnectivity(connectivity);
 
-                if (link != null) // If the link already exists, no need to create a new link
-                {
-                    currentLinks.Add(link);
-                    link.Connection.SetColor(color);
-
-                    continue;
-                }
-
-                link = new CommNetLink(previousNode, node);
-
                 // Only add it to the discovered links if it has been successfully placed on the map
-                if (!CommLineManager.AddLink(link)) continue;
+                if (!CommLineManager.AddConnection(node, previousNode, out var connection)) continue;
 
-                currentLinks.Add(link);
-                Links.Add(link);
-                link.Connection.SetColor(color);
+                currentConnections.Add(connection);
+                connection.SetColor(color);
             }
 
-            return currentLinks;
-        }
-
-        private static void RemoveUnusedLinks(List<CommNetLink> stillInUse)
-        {
-            var toRemove = new List<CommNetLink>();
-
-            foreach (var link in Links.Where(link => !stillInUse.Contains(link)))
-            {
-                toRemove.Add(link);
-                CommLineManager.RemoveLink(link);
-            }
-
-            foreach (var link in toRemove)
-            {
-                Links.Remove(link);
-            }
+            return currentConnections;
         }
 
         private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance,
@@ -176,24 +132,6 @@ namespace CommLines.CommNet
             return distance < maxDistance && distance < maxDistance2;
         }
 
-        private static CommNetLink GetLink(IGGuid comm1, IGGuid comm2)
-        {
-            foreach (var link in Links)
-            {
-                if (link.Node1.Owner == comm1 && link.Node2.Owner == comm2)
-                {
-                    return link;
-                }
-
-                if (link.Node1.Owner == comm2 && link.Node2.Owner == comm1)
-                {
-                    return link;
-                }
-            }
-
-            return null;
-        }
-        
         private static Color GetColorForConnectivity(float connectivity) => Color.HSVToRGB(connectivity / 3f, 1, 1);
     }
 }

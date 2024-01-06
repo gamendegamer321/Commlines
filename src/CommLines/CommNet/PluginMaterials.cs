@@ -11,8 +11,10 @@ namespace CommLines.CommNet
 
         public static void GenerateMaterials()
         {
-            CommLineCommLineMaterial = new Material(Shader.Find(ShaderToUse));
-            CommLineCommLineMaterial.color = Color;
+            CommLineCommLineMaterial = new Material(Shader.Find(ShaderToUse))
+            {
+                color = Color
+            };
         }
     }
 }
