@@ -11,17 +11,18 @@ public static class CommNetJobHandler
     private static bool _running;
 
     private static JobHandle _jobHandle;
-    
-    private static NativeArray<int> _previousNodes; // The previous node when using ALL
+
+    private static int _nodeCount;
+    private static bool _calculatedUsingPath;
     private static NativeArray<float> _speedToPrevious;
 
     public static void OnUpdate()
     {
         if (!_running || !_jobHandle.IsCompleted) return;
-        
+
         _jobHandle.Complete();
         _running = false;
-        
+
         // After our job is complete, update the visual lines
         LinkManager.UpdateConnections();
     }
@@ -30,44 +31,79 @@ public static class CommNetJobHandler
         NativeArray<ConnectionGraph.ConnectionGraphJobNode> nativeNodes, NativeArray<int> previousNodes)
     {
         if (_running) return;
-        
-        var usingPathMode = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly;
-        CreateArrays(nodes.Count, usingPathMode);
-        
+
+        _calculatedUsingPath = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly;
+        CreateArrays(nodes.Count, _calculatedUsingPath);
+
         _running = true;
-        
-        if (!usingPathMode) return;
-        
-        _jobHandle = new PathConnectivityJob
+        _nodeCount = nodes.Count;
+
+        if (_calculatedUsingPath)
         {
-            Nodes = nativeNodes,
-            PrevNode = previousNodes,
-            ConnectionSpeed = _speedToPrevious
-        }.Schedule();
+            _jobHandle = new PathConnectivityJob
+            {
+                Nodes = nativeNodes,
+                PrevNode = previousNodes,
+                ConnectionSpeed = _speedToPrevious
+            }.Schedule();
+        }
+        else
+        {
+            _jobHandle = new AllConnectionsJob
+            {
+                Nodes = nativeNodes,
+                SpeedToPrevious = _speedToPrevious
+            }.Schedule();
+        }
     }
-    
+
+    /// <summary>
+    /// Get the connectvity between two nodes, only available in ALL mode.
+    /// </summary>
+    public static float GetConnectivity(int node1, int node2)
+    {
+        if (_calculatedUsingPath) return 0.0f;
+        var index = GetTableIndex(node1, node2);
+        if (index < 0 || index > _speedToPrevious.Length) return 0.0f;
+        return _speedToPrevious[index];
+    }
+
+    /// <summary>
+    /// Get the connectivity from this node to it's previous node, only available in PATH mode
+    /// </summary>
     public static float GetConnectivity(int index)
     {
-        if (_running) return 0.0f;
+        if (_running || !_calculatedUsingPath) return 0.0f;
         if (index < 0 || index >= _speedToPrevious.Length) return 0.0f;
         return _speedToPrevious[index];
     }
-    
+
     public static void DisposeAll()
     {
-        if (_previousNodes.IsCreated) _previousNodes.Dispose();
         if (_speedToPrevious.IsCreated) _speedToPrevious.Dispose();
     }
 
     private static void CreateArrays(int nodeCount, bool pathMode)
     {
         DisposeAll();
-        
+
         var tableNodeCount = pathMode ? nodeCount : GetAllTableSize(nodeCount);
         _speedToPrevious = new NativeArray<float>(tableNodeCount, Allocator.Persistent);
+    }
 
-        // We only calculate our own when not using path mode
-        if (!pathMode) _previousNodes = new NativeArray<int>(tableNodeCount, Allocator.Persistent);
+    /// <summary>
+    /// Get the table index using the indices of the two nodes. This can be used for the connectivity table.
+    /// </summary>
+    private static int GetTableIndex(int i, int j)
+    {
+        if (i == j) return -1;
+        if (i > j) // Swap the values so that i < j
+        {
+            (i, j) = (j, i);
+        }
+
+        j--;
+        return i * (_nodeCount - 1) - i * (i + 1) / 2 + j;
     }
 
     private static int GetAllTableSize(int n) => (n * n - n) / 2;
