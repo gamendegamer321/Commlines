@@ -1,6 +1,5 @@
 ﻿using CommLines.CommLines;
 using KSP.Sim;
-using KSP.Sim.impl;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -66,30 +65,16 @@ namespace CommLines.CommNet
                     continue;
                 }
 
-                // Calculate here so we don't have to do it within the next loop
-                var maxDistance = currentNode.MaxRange * currentNode.MaxRange;
-
                 // We start one higher than the previous as this is the first node to check it against
                 for (var j = i + 1; j < _nodes.Count; j++)
                 {
-                    var nextNode = _nodes[j];
+                    var connectivity = CommNetJobHandler.GetConnectivity(i, j);
 
-                    if (!nextNode.IsActive) // If the node is inactive, it can never connect
-                    {
-                        continue;
-                    }
-
-                    if (!IsValidConnection(currentNode, nextNode,
-                            maxDistance, out Color color)) // No need to check anything if they are not connected
-                    {
-                        continue;
-                    }
-
-                    // Try to create or get the connection, if that's not possible go to the next
-                    if (!CommLineManager.AddConnection(currentNode, nextNode, out var connection)) continue;
+                    if (connectivity <= 0) continue;
+                    if (!CommLineManager.AddConnection(currentNode, _nodes[j], out var connection)) continue;
 
                     currentConnections.Add(connection);
-                    connection.SetColor(color);
+                    connection.SetColor(GetColorForConnectivity(connectivity));
                 }
             }
 
