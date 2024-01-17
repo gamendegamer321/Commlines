@@ -25,6 +25,9 @@ public static class CommNetJobHandler
 
         // After our job is complete, update the visual lines
         LinkManager.UpdateConnections();
+        
+        // Inform the transmission multiplier there might be a new connectivity value
+        TransmissionMultiplier.SetDirty();
     }
 
     public static void CalculateNetwork(List<ConnectionGraphNode> nodes,
@@ -58,11 +61,11 @@ public static class CommNetJobHandler
     }
 
     /// <summary>
-    /// Get the connectvity between two nodes, only available in ALL mode.
+    /// Get the connectivity between two nodes, only available in ALL mode.
     /// </summary>
     public static float GetConnectivity(int node1, int node2)
     {
-        if (_calculatedUsingPath) return 0.0f;
+        if (_running || _calculatedUsingPath || !_speedToPrevious.IsCreated) return -1.0f;
         var index = GetTableIndex(node1, node2);
         if (index < 0 || index > _speedToPrevious.Length) return 0.0f;
         return _speedToPrevious[index];
@@ -73,10 +76,16 @@ public static class CommNetJobHandler
     /// </summary>
     public static float GetConnectivity(int index)
     {
-        if (_running || !_calculatedUsingPath) return 0.0f;
+        if (_running || !_calculatedUsingPath || !_speedToPrevious.IsCreated) return -1.0f;
         if (index < 0 || index >= _speedToPrevious.Length) return 0.0f;
         return _speedToPrevious[index];
     }
+
+    public static float GetConnectivity(ConnectionGraphNode node1, ConnectionGraphNode node2)
+        => GetConnectivity(LinkManager.Nodes.IndexOf(node1), LinkManager.Nodes.IndexOf(node2));
+
+    public static float GetConnectivity(ConnectionGraphNode node)
+        => GetConnectivity(LinkManager.Nodes.IndexOf(node));
 
     public static void DisposeAll()
     {

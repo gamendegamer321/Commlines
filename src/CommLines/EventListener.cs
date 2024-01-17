@@ -14,6 +14,7 @@ namespace CommLines
             var messageCenter = GameManager.Instance.Game.Messages;
             messageCenter.PersistentSubscribe<MapInitializedMessage>(OnMapInitialized);
             messageCenter.PersistentSubscribe<MapViewLeftMessage>(OnMapViewLeft);
+            messageCenter.PersistentSubscribe<VesselChangedMessage>(OnVesselChanged);
         }
 
         private static void OnMapInitialized(MessageCenterMessage _)
@@ -29,6 +30,11 @@ namespace CommLines
         private static void OnMapViewLeft(MessageCenterMessage _)
         {
             IsInMapView = false;
+        }
+
+        private static void OnVesselChanged(MessageCenterMessage _)
+        {
+            TransmissionMultiplier.SetDirty();
         }
     }
 }

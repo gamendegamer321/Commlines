@@ -20,7 +20,11 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     public static CommLinesPlugin Instance { get; set; }
 
+    private const string ConfigSection = "Stable features";
+    private const string ExperimentalConfigSection = "Experimental features";
+    
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
+    public static ConfigEntry<bool> TransmissionMultiplier { get; private set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -31,15 +35,17 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         Instance = this;
 
         // Create the patch
-        Harmony.CreateAndPatchAll(typeof(CommNetPatch));
-        Harmony.CreateAndPatchAll(typeof(SessionManagerPatch));
+        Harmony.CreateAndPatchAll(typeof(CommNetPatches));
 
         // Start the event listener
         EventListener.RegisterEvents();
 
-        CommNetModeEntry = Config.Bind("CommNet Utils Section", "Use path", CommLineMode.All,
+        CommNetModeEntry = Config.Bind(ConfigSection, "Use path", CommLineMode.All,
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
+
+        TransmissionMultiplier = Config.Bind(ExperimentalConfigSection, "Transmission multiplier", true,
+            "Use a multiplier for transmission time depending on the distance between CommNet nodes");
 
         Logger.LogInfo("Creating materials");
         PluginMaterials.GenerateMaterials();
