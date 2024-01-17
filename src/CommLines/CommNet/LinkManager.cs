@@ -1,5 +1,6 @@
 ﻿using CommLines.CommLines;
 using KSP.Sim;
+using KSP.Sim.impl;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -8,8 +9,9 @@ namespace CommLines.CommNet
 {
     public static class LinkManager
     {
+        public static List<ConnectionGraphNode> Nodes;
+
         private static ConnectionGraph _graph;
-        private static List<ConnectionGraphNode> _nodes;
         private static NativeArray<ConnectionGraph.ConnectionGraphJobNode> _jobNodes;
         private static NativeArray<int> _previousIndices;
 
@@ -22,8 +24,9 @@ namespace CommLines.CommNet
         public static void RefreshingCommnet(ConnectionGraph graph, List<ConnectionGraphNode> nodes,
             NativeArray<ConnectionGraph.ConnectionGraphJobNode> jobNodes, NativeArray<int> previousIndices)
         {
+            Nodes = nodes;
+
             _graph = graph;
-            _nodes = nodes;
             _jobNodes = jobNodes;
             _previousIndices = previousIndices;
 
@@ -35,7 +38,7 @@ namespace CommLines.CommNet
             if (!_isRefreshing || !_graph.HasResult) return;
 
             // When the game has finished updating the CommNet its our turn
-            CommNetJobHandler.CalculateNetwork(_nodes, _jobNodes, _previousIndices);
+            CommNetJobHandler.CalculateNetwork(Nodes, _jobNodes, _previousIndices);
             _isRefreshing = false;
         }
 
@@ -52,13 +55,26 @@ namespace CommLines.CommNet
             CommLineManager.RemoveDisconnected(currentLinks);
         }
 
+        public static List<ConnectionGraphNode> GetPath(IGGuid guid)
+        {
+            List<ConnectionGraphNode> path = new();
+            
+            foreach (var node in Nodes.Where(node => node.Owner == guid))
+            {
+                _graph.TryGetPathFromSourceNode(node, ref path);
+                break;
+            }
+
+            return path;
+        }
+
         private static List<CommLineConnection> GenerateAllConnections()
         {
             var currentConnections = new List<CommLineConnection>();
 
-            for (var i = 0; i < _nodes.Count; i++)
+            for (var i = 0; i < Nodes.Count; i++)
             {
-                var currentNode = _nodes[i];
+                var currentNode = Nodes[i];
 
                 if (!currentNode.IsActive) // If the node is not active, it can not be connected
                 {
@@ -66,12 +82,12 @@ namespace CommLines.CommNet
                 }
 
                 // We start one higher than the previous as this is the first node to check it against
-                for (var j = i + 1; j < _nodes.Count; j++)
+                for (var j = i + 1; j < Nodes.Count; j++)
                 {
                     var connectivity = CommNetJobHandler.GetConnectivity(i, j);
 
                     if (connectivity <= 0) continue;
-                    if (!CommLineManager.AddConnection(currentNode, _nodes[j], out var connection)) continue;
+                    if (!CommLineManager.AddConnection(currentNode, Nodes[j], out var connection)) continue;
 
                     currentConnections.Add(connection);
                     connection.SetColor(GetColorForConnectivity(connectivity));
@@ -85,14 +101,14 @@ namespace CommLines.CommNet
         {
             var currentConnections = new List<CommLineConnection>();
 
-            for (var i = 0; i < _nodes.Count; i++)
+            for (var i = 0; i < Nodes.Count; i++)
             {
-                var node = _nodes[i];
+                var node = Nodes[i];
                 var previousIndex = _previousIndices[i];
 
-                if (previousIndex < 0 || previousIndex > _nodes.Count) continue;
+                if (previousIndex < 0 || previousIndex > Nodes.Count) continue;
 
-                var previousNode = _nodes[previousIndex];
+                var previousNode = Nodes[previousIndex];
 
                 var connectivity = CommNetJobHandler.GetConnectivity(i);
                 var color = GetColorForConnectivity(connectivity);
@@ -105,16 +121,6 @@ namespace CommLines.CommNet
             }
 
             return currentConnections;
-        }
-
-        private static bool IsValidConnection(ConnectionGraphNode node1, ConnectionGraphNode node2, double maxDistance,
-            out Color color)
-        {
-            var distance = math.distancesq(node1.Position, node2.Position);
-            var maxDistance2 = node2.MaxRange * node2.MaxRange;
-            color = Color.Lerp(Color.green, Color.red, (float)(distance / Math.Min(maxDistance, maxDistance2)));
-
-            return distance < maxDistance && distance < maxDistance2;
         }
 
         private static Color GetColorForConnectivity(float connectivity) => Color.HSVToRGB(connectivity / 3f, 1, 1);
