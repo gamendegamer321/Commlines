@@ -38,9 +38,8 @@ namespace CommLines.Patches
         {
             // If the system is disabled, don't do anything
             if (!CommLinesPlugin.TransmissionMultiplier.Value) return;
-
-            var newValue = __result * TransmissionMultiplier.GetMultiplier();
-            __result = newValue;
+            
+            __result *= TransmissionMultiplier.GetMultiplier();
         }
     }
 }
