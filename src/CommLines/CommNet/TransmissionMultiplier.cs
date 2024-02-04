@@ -77,7 +77,7 @@ public static class TransmissionMultiplier
         _cachedValue = currentLowest;
     }
 
-    private static void CalculateForAll(List<ConnectionGraphNode> path)
+    private static void CalculateForAll(IReadOnlyList<ConnectionGraphNode> path)
     {
         var currentLowest = 1f;
 

@@ -44,7 +44,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
 
-        TransmissionMultiplier = Config.Bind(ExperimentalConfigSection, "Transmission multiplier", true,
+        TransmissionMultiplier = Config.Bind(ExperimentalConfigSection, "Transmission multiplier", false,
             "Use a multiplier for transmission time depending on the distance between CommNet nodes");
 
         Logger.LogInfo("Creating materials");
