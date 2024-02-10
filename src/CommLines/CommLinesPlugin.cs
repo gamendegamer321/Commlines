@@ -16,7 +16,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     // These are useful in case some other mod wants to add a dependency to this one
     public const string ModGuid = "com.gamendegamer.commlines";
     public const string ModName = "CommLines";
-    public const string ModVer = "1.0.2";
+    public const string ModVer = "1.1.0";
 
     public static CommLinesPlugin Instance { get; set; }
 
