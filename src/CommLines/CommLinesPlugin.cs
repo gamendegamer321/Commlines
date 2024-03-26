@@ -25,6 +25,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
     public static ConfigEntry<bool> TransmissionMultiplier { get; private set; }
+    public static ConfigEntry<int> LineOpacity { get; private set; }
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -44,8 +45,12 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
             "Set the display mode for the CommNet lines");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
 
-        TransmissionMultiplier = Config.Bind(ExperimentalConfigSection, "Transmission multiplier", false,
+        TransmissionMultiplier = Config.Bind(ConfigSection, "Transmission multiplier", false,
             "Use a multiplier for transmission time depending on the distance between CommNet nodes");
+
+        LineOpacity = Config.Bind(ExperimentalConfigSection, "Line opacity", 100,
+            "Sets the opacity of the commlines where 0 is invisible/black and 100 fully visible");
+        LineOpacity.SettingChanged += OnUpdateLineOpacity;
 
         Logger.LogInfo("Creating materials");
         PluginMaterials.GenerateMaterials();
@@ -70,5 +75,22 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         // Remove all links and the job memory when disabling CommLines
         CommLineManager.RemoveAll();
         CommNetJobHandler.DisposeAll();
+    }
+
+    private void OnUpdateLineOpacity(object entry, EventArgs _)
+    {
+        var configEntry = (ConfigEntry<int>)entry;
+
+        switch (configEntry.Value)
+        {
+            case < 0:
+                configEntry.Value = 0;
+                Config.Save();
+                break;
+            case > 100:
+                configEntry.Value = 100;
+                Config.Save();
+                break;
+        }
     }
 }
