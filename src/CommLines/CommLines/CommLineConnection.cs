@@ -17,7 +17,7 @@ namespace CommLines.CommLines
 
         private LineRenderer _renderer;
         private bool _initialized;
-        
+
         public void Update()
         {
             if (!_initialized)
@@ -50,7 +50,7 @@ namespace CommLines.CommLines
             _renderer.material = PluginMaterials.CommLineCommLineMaterial;
             _renderer.widthMultiplier = Width;
             _renderer.positionCount = 2;
-            
+
             var positions = new[] { _mapItem1.transform.position, _mapItem2.transform.position };
             _renderer.SetPositions(positions);
 
@@ -63,10 +63,13 @@ namespace CommLines.CommLines
             {
                 return;
             }
-            
+
+            var opacity = CommLinesPlugin.LineOpacity.Value / 100f;
+            color.a = opacity;
+
             _renderer.material.color = color;
         }
-        
+
         public void Destroy()
         {
             Destroy(gameObject);
