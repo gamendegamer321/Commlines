@@ -25,7 +25,7 @@ public static class CommNetJobHandler
 
         // After our job is complete, update the visual lines
         LinkManager.UpdateConnections();
-        
+
         // Inform the transmission multiplier there might be a new connectivity value
         TransmissionMultiplier.SetDirty();
     }
@@ -35,7 +35,7 @@ public static class CommNetJobHandler
     {
         if (_running) return;
 
-        _calculatedUsingPath = CommLinesPlugin.CommNetModeEntry.Value == CommLineMode.PathOnly;
+        _calculatedUsingPath = CalculatePath();
         CreateArrays(nodes.Count, _calculatedUsingPath);
 
         _running = true;
@@ -72,7 +72,7 @@ public static class CommNetJobHandler
     }
 
     /// <summary>
-    /// Get the connectivity from this node to it's previous node, only available in PATH mode
+    /// Get the connectivity from this node to its previous node, only available in PATH mode
     /// </summary>
     public static float GetConnectivity(int index)
     {
@@ -113,6 +113,24 @@ public static class CommNetJobHandler
 
         j--;
         return i * (_nodeCount - 1) - i * (i + 1) / 2 + j;
+    }
+
+    private static bool CalculatePath()
+    {
+        switch (CommLinesPlugin.CommNetModeEntry.Value)
+        {
+            case CommLineMode.VesselLinks:
+            case CommLineMode.All:
+                CommLineManager.Logger.LogInfo("Calculating all");
+                return false;
+            case CommLineMode.Disabled:
+            case CommLineMode.Hop:
+            case CommLineMode.ActivePathOnly:
+            case CommLineMode.PathOnly:
+            default:
+                CommLineManager.Logger.LogInfo("Calculating path");
+                return true;
+        }
     }
 
     private static int GetAllTableSize(int n) => (n * n - n) / 2;

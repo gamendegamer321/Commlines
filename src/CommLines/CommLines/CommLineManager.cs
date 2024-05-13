@@ -9,7 +9,7 @@ namespace CommLines.CommLines
     public static class CommLineManager
     {
         private const string MapLayer = "Map";
-        private static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("CommNet Manager");
+        public static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("CommNet Manager");
         private static readonly List<CommLineConnection> Connections = new();
 
         private static GameInstance Game => GameManager.Instance.Game;

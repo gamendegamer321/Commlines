@@ -3,6 +3,9 @@
 public enum CommLineMode
 {
     Disabled,
+    Hop,
+    VesselLinks,
+    ActivePathOnly,
     PathOnly,
     All
 }
