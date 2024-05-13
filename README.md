@@ -28,7 +28,8 @@ update. The available viewing modes are:
 
 While in flight mode there is a button in the app bar. Pressing this button will switch your commlines view to the next
 in the same order as the different modes are listed above. This is an easier way to go through all the different modes
-and see the result than going into the settings menu.
+and see the result than going into the settings menu. To make it quicker to toggle switch through the modes, the mod
+will try to keep the app tray open.
 The disabled or enabled indication next to the button can be ignored.
 
 Keep in mind, it will still take a few seconds for the lines to actually update!

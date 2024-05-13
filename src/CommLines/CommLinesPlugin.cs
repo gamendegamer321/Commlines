@@ -5,6 +5,8 @@ using HarmonyLib;
 using CommLines.CommNet;
 using CommLines.Patches;
 using KSP.Game;
+using KSP.UI.Binding;
+using KSP.UI.Binding.Core;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
@@ -26,12 +28,15 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     private static GameInstance game => GameManager.Instance.Game;
 
+    private const string AppbarId = "Commlines.Toggle";
     private const string ConfigSection = "Stable features";
     private const string ExperimentalConfigSection = "Experimental features";
 
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
     public static ConfigEntry<bool> TransmissionMultiplier { get; private set; }
     public static ConfigEntry<int> LineOpacity { get; private set; }
+
+    private bool _reopenTray;
 
     /// <summary>
     /// Runs when the mod is first initialized.
@@ -65,7 +70,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         Logger.LogInfo("Registering button");
         Appbar.RegisterAppButton(
             "Switch commlines",
-            "Commlines.Toggle",
+            AppbarId,
             AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
             _ => SelectNextMode()
         );
@@ -75,6 +80,12 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     public void Update()
     {
+        if (_reopenTray)
+        {
+            OpenTray();
+            _reopenTray = false;
+        }
+
         if (CommNetModeEntry == null || CommNetModeEntry.Value == CommLineMode.Disabled) return;
 
         LinkManager.OnUpdate();
@@ -114,10 +125,12 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         if (CommNetModeEntry.Value == CommLineMode.All)
         {
             CommNetModeEntry.Value = CommLineMode.Disabled;
+            Appbar.SetAppBarButtonIndicator(AppbarId, false);
         }
         else
         {
             CommNetModeEntry.Value += 1;
+            Appbar.SetAppBarButtonIndicator(AppbarId, true);
         }
 
         game.Notifications.ProcessNotification(new NotificationData
@@ -130,5 +143,29 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
                 ObjectParams = [CommNetModeEntry.Value]
             }
         });
+
+        _reopenTray = true;
+    }
+
+    private static void OpenTray()
+    {
+        var appbar = GameObject.Find("GameManager/Default Game Instance(Clone)/UI Manager(Clone)/" +
+                                     "Scaled Popup Canvas/Container/ButtonBar/BTN-App-Tray");
+
+        if (appbar == null)
+        {
+            CommLineManager.Logger.LogInfo("NOT FOUND!");
+            return;
+        }
+
+        var value = appbar.GetComponent<UIValue_WriteBool_Toggle>();
+        if (value == null)
+        {
+            CommLineManager.Logger.LogInfo("NOT FOUND! 2.0");
+            return;
+        }
+
+        CommLineManager.Logger.LogInfo("Detected!");
+        value.SetValue(true);
     }
 }
