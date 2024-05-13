@@ -4,6 +4,7 @@ using CommLines.CommLines;
 using HarmonyLib;
 using CommLines.CommNet;
 using CommLines.Patches;
+using KSP.Game;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
@@ -22,6 +23,8 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     public const string ModVer = "1.1.0";
 
     public static CommLinesPlugin Instance { get; set; }
+
+    private static GameInstance game => GameManager.Instance.Game;
 
     private const string ConfigSection = "Stable features";
     private const string ExperimentalConfigSection = "Experimental features";
@@ -116,5 +119,16 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         {
             CommNetModeEntry.Value += 1;
         }
+
+        game.Notifications.ProcessNotification(new NotificationData
+        {
+            Tier = NotificationTier.Passive,
+            Importance = NotificationImportance.None,
+            Primary =
+            {
+                LocKey = "CommLines/Notifications/Changed",
+                ObjectParams = [CommNetModeEntry.Value]
+            }
+        });
     }
 }
