@@ -24,6 +24,15 @@ update. The available viewing modes are:
 - PathOnly -> Show the path from each vessel to the KSC
 - All -> Show all connections between all vessels
 
+### Quick switch button
+
+While in flight mode there is a button in the app bar. Pressing this button will switch your commlines view to the next
+in the same order as the different modes are listed above. This is an easier way to go through all the different modes
+and see the result than going into the settings menu.
+The disabled or enabled indication next to the button can be ignored.
+
+Keep in mind, it will still take a few seconds for the lines to actually update!
+
 ### Transmission speed [Experimental]
 
 When enabling the transmission multiplier in the settings or config, the amount of time needed to transmit a science
