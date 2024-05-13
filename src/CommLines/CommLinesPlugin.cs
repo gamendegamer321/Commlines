@@ -22,7 +22,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
     private const string ConfigSection = "Stable features";
     private const string ExperimentalConfigSection = "Experimental features";
-    
+
     public static ConfigEntry<CommLineMode> CommNetModeEntry { get; private set; }
     public static ConfigEntry<bool> TransmissionMultiplier { get; private set; }
     public static ConfigEntry<int> LineOpacity { get; private set; }
@@ -41,8 +41,9 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         // Start the event listener
         EventListener.RegisterEvents();
 
-        CommNetModeEntry = Config.Bind(ConfigSection, "Use path", CommLineMode.All,
-            "Set the display mode for the CommNet lines");
+        CommNetModeEntry = Config.Bind(ConfigSection, "Display mode", CommLineMode.All,
+            "Set the display mode for the CommNet lines.\n\n" +
+            "It may take multiple seconds for the lines to update!");
         CommNetModeEntry.SettingChanged += OnUpdateCommNetMode;
 
         TransmissionMultiplier = Config.Bind(ConfigSection, "Transmission multiplier", false,

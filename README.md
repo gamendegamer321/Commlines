@@ -18,9 +18,11 @@ To change the viewing mode, open the ingame settings menu and go to the "mods" t
 called "CommLines", where you can change the mode. When changing the viewing mode, it might take a few seconds to
 update. The available viewing modes are:
 
-- DISABLED => Show none of the lines, the same as not having the mod installed.
-- PATHONLY => Only show the path the connection takes.
-- ALL => Show lines between all vessels that are within range of eachother
+- Hop -> Only shows the first hop in your vessels path to the KSC
+- VesselLinks -> Only shows connection to the vessel you can reach in 1 hop
+- ActivePathOnly -> Show only the path from the active vessel to the KSC
+- PathOnly -> Show the path from each vessel to the KSC
+- All -> Show all connections between all vessels
 
 ### Transmission speed [Experimental]
 
