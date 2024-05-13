@@ -5,7 +5,10 @@ using HarmonyLib;
 using CommLines.CommNet;
 using CommLines.Patches;
 using SpaceWarp;
+using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
+using SpaceWarp.API.UI.Appbar;
+using UnityEngine;
 
 namespace CommLines;
 
@@ -56,6 +59,14 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
         Logger.LogInfo("Creating materials");
         PluginMaterials.GenerateMaterials();
 
+        Logger.LogInfo("Registering button");
+        Appbar.RegisterAppButton(
+            "Switch commlines",
+            "Commlines.Toggle",
+            AssetManager.GetAsset<Texture2D>($"{ModGuid}/images/icon.png"),
+            _ => SelectNextMode()
+        );
+
         Logger.LogInfo("Initialized CommNet Utils");
     }
 
@@ -92,6 +103,18 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
                 configEntry.Value = 100;
                 Config.Save();
                 break;
+        }
+    }
+
+    private void SelectNextMode()
+    {
+        if (CommNetModeEntry.Value == CommLineMode.All)
+        {
+            CommNetModeEntry.Value = CommLineMode.Disabled;
+        }
+        else
+        {
+            CommNetModeEntry.Value += 1;
         }
     }
 }
