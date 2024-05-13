@@ -1,0 +1,3 @@
+﻿Key,Type,Description,English
+CommLines/Notifications/Changed,Text,,"New commlines mode: {0}"
+CommLines/Notifications/Title,Text,,"Quick switch"
