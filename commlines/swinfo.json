@@ -5,17 +5,17 @@
   "name": "CommNetUtils",
   "description": "Add CommNet lines to KSP 2",
   "source": "https://github.com/gamendegamer321/Commlines",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "version_check": "https://raw.githubusercontent.com/gamendegamer321/Commlines/main/commlines/swinfo.json",
   "ksp2_version": {
-    "min": "0.1.5",
+    "min": "0.2.1",
     "max": "*"
   },
   "dependencies": [
     {
       "id": "com.github.x606.spacewarp",
       "version": {
-        "min": "1.5.2",
+        "min": "1.9.5",
         "max": "*"
       }
     }

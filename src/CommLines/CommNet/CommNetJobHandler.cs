@@ -121,14 +121,12 @@ public static class CommNetJobHandler
         {
             case CommLineMode.VesselLinks:
             case CommLineMode.All:
-                CommLineManager.Logger.LogInfo("Calculating all");
                 return false;
             case CommLineMode.Disabled:
             case CommLineMode.Hop:
             case CommLineMode.ActivePathOnly:
             case CommLineMode.PathOnly:
             default:
-                CommLineManager.Logger.LogInfo("Calculating path");
                 return true;
         }
     }
