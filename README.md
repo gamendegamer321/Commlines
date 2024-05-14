@@ -2,7 +2,8 @@
 
 Adds the CommNet lines from KSP 1 to KSP 2. This will finally allow you to see the CommNet you have set up in KSP 2.
 
-This mod requires [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx) 1.5.2+
+This mod requires [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx), it is recommended to always
+use the newest version.
 
 ## How to use
 
@@ -43,15 +44,7 @@ as long as there are a lot of relays between the vessel and the KSC.
 
 ## Images
 
-Below I have added a few images of how the lines look. I have added images with pathmode off and images of the same
-scenario with pathmode on.
-
-### Pathmode = off
-
 ![image](https://github.com/gamendegamer321/Commlines/assets/74590966/741801d9-59c8-4acf-b759-587172343d41)
 ![image](https://github.com/gamendegamer321/Commlines/assets/74590966/a7a83b2b-310e-435c-b918-90bd53c6249c)
-
-### Pathmode = on
-
 ![image](https://github.com/gamendegamer321/Commlines/assets/74590966/9362865f-c45b-4c7b-9d33-74689d884d6c)
 ![image](https://github.com/gamendegamer321/Commlines/assets/74590966/f65d884a-c834-48ec-b446-6703504cc2df)

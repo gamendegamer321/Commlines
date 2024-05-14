@@ -6,7 +6,6 @@ using CommLines.CommNet;
 using CommLines.Patches;
 using KSP.Game;
 using KSP.UI.Binding;
-using KSP.UI.Binding.Core;
 using SpaceWarp;
 using SpaceWarp.API.Assets;
 using SpaceWarp.API.Mods;
@@ -22,11 +21,9 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
     // These are useful in case some other mod wants to add a dependency to this one
     public const string ModGuid = "com.gamendegamer.commlines";
     public const string ModName = "CommLines";
-    public const string ModVer = "1.1.0";
+    public const string ModVer = "1.2.0";
 
     public static CommLinesPlugin Instance { get; set; }
-
-    private static GameInstance game => GameManager.Instance.Game;
 
     private const string AppbarId = "Commlines.Toggle";
     private const string ConfigSection = "Stable features";
@@ -133,7 +130,7 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
             Appbar.SetAppBarButtonIndicator(AppbarId, true);
         }
 
-        game.Notifications.ProcessNotification(new NotificationData
+        Game.Notifications.ProcessNotification(new NotificationData
         {
             Tier = NotificationTier.Passive,
             Importance = NotificationImportance.None,
@@ -154,18 +151,15 @@ public class CommLinesPlugin : BaseSpaceWarpPlugin
 
         if (appbar == null)
         {
-            CommLineManager.Logger.LogInfo("NOT FOUND!");
             return;
         }
 
         var value = appbar.GetComponent<UIValue_WriteBool_Toggle>();
         if (value == null)
         {
-            CommLineManager.Logger.LogInfo("NOT FOUND! 2.0");
             return;
         }
-
-        CommLineManager.Logger.LogInfo("Detected!");
+        
         value.SetValue(true);
     }
 }
