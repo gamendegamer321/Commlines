@@ -35,7 +35,7 @@ The disabled or enabled indication next to the button can be ignored.
 
 Keep in mind, it will still take a few seconds for the lines to actually update!
 
-### Transmission speed [Experimental]
+### Transmission speed
 
 When enabling the transmission multiplier in the settings or config, the amount of time needed to transmit a science
 experiment will be increased depending on how well you are connected to the KSC. This calculation is done using the
