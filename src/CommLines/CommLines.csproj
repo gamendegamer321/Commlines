@@ -2,23 +2,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <!-- Project references -->
     <PropertyGroup>
-      <RootNamespace>CommLines</RootNamespace>
+        <RootNamespace>CommLines</RootNamespace>
     </PropertyGroup>
     <ItemGroup Label="NuGet package references">
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.Core" Version="5.*"/>
         <PackageReference Include="HarmonyX" Version="2.10.2" />
-        <PackageReference Include="SpaceWarp" Version="1.0.1" />
-        <PackageReference Include="SpaceWarp.PluginInfoProps" Version="1.*"/>
-        <PackageReference Include="UnityEngine.Modules" Version="2022.3.5"/>
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="Assembly-CSharp">
-        <HintPath>..\..\external_dlls\Assembly-CSharp.dll</HintPath>
-      </Reference>
-      <Reference Include="Unity.Mathematics">
-        <HintPath>..\..\external_dlls\Unity.Mathematics.dll</HintPath>
-      </Reference>
+    <ItemGroup Label="Assemblies">
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(KSP2DIR)\KSP2_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp-Firstpass">
+            <HintPath>$(KSP2DIR)\KSP2_x64_Data\Managed\Assembly-CSharp-Firstpass.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup Label="Unity">
+        <Reference Include="$(KSP2DIR)\KSP2_x64_Data\Managed\Unity.*.dll" />
+        <Reference Include="$(KSP2DIR)\KSP2_x64_Data\Managed\UnityEngine.dll" />
+        <Reference Include="$(KSP2DIR)\KSP2_x64_Data\Managed\UnityEngine.*.dll" />
+    </ItemGroup>
+    <ItemGroup Label="SpaceWarp">
+        <Reference Include="SpaceWarp">
+            <HintPath>$(KSP2DIR)\BepInEx\plugins\SpaceWarp\SpaceWarp.dll</HintPath>
+        </Reference>
+        <Reference Include="SpaceWarp.Core">
+            <HintPath>$(KSP2DIR)\BepInEx\plugins\SpaceWarp\SpaceWarp.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="$(KSP2DIR)\BepInEx\plugins\SpaceWarp\modules\*.dll" />
     </ItemGroup>
 </Project>
