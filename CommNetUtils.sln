@@ -10,6 +10,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Deploy|Any CPU = Deploy|Any CPU
 		DeployAndRun|Any CPU = DeployAndRun|Any CPU
+        DeployAndRunSteam|Any CPU = DeployAndRunSteam|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -19,6 +20,8 @@ Global
 		{A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.DeployAndRun|Any CPU.ActiveCfg = DeployAndRun|Any CPU
 		{A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.DeployAndRun|Any CPU.Build.0 = DeployAndRun|Any CPU
+        {A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.DeployAndRunSteam|Any CPU.ActiveCfg = DeployAndRunSteam|Any CPU
+        {A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.DeployAndRunSteam|Any CPU.Build.0 = DeployAndRunSteam|Any CPU
 		{A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A22B9E0E-F7AE-4C6E-BD4D-8DF03634FBBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
