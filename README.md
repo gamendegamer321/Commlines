@@ -1,5 +1,7 @@
 # CommLines
 
+*The tags used in this repository for version 1.2.0 and older are broken!*
+
 Adds the CommNet lines from KSP 1 to KSP 2. This will finally allow you to see the CommNet you have set up in KSP 2.
 
 This mod requires [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx), it is recommended to always
