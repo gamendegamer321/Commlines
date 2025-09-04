@@ -1,5 +1,5 @@
 [![GitHub release](https://flat.badgen.net/github/release/gamendegamer321/Commlines/)](https://github.com/gamendegamer321/Commlines/releases/latest)
-![KSP Version](https://flat.badgen.net/static/Game%20Version/v0.2.1+)
+[![KSP Version](https://flat.badgen.net/static/Game%20Version/v0.2.1+)](https://github.com/gamendegamer321/Commlines)
 [![SpaceWarp Version](https://flat.badgen.net/static/SpaceWarp%20Version/v1.9.5+)](https://github.com/SpaceWarpDev/SpaceWarp)
 [![License](https://flat.badgen.net/github/license/gamendegamer321/Commlines/)](https://github.com/gamendegamer321/Commlines/blob/master/LICENSE)
 
