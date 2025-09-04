@@ -26,8 +26,8 @@
         <Copy Condition="Exists('$(SolutionDir)/LICENSE')"
               SourceFiles="$(SolutionDir)/LICENSE"
               DestinationFolder="$(SolutionDir)/dist/$(ConfigurationName)/BepInEx/plugins/$(ProjectName)"/>
-        <Copy Condition="Exists('$(SolutionDir)/README.md')"
-              SourceFiles="$(SolutionDir)/README.md"
+        <Copy Condition="Exists('$(SolutionDir)/README_SpaceDock.md')"
+              SourceFiles="$(SolutionDir)/README_SpaceDock.md"
               DestinationFiles="$(SolutionDir)/dist/$(ConfigurationName)/BepInEx/plugins/$(ProjectName)/README.txt"/>
 
         <Message Text="Compressing built plugin folder" Condition="$(ConfigurationName) == Release"/>

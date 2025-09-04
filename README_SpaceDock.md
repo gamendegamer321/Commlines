@@ -3,31 +3,27 @@
 [![SpaceWarp Version](https://flat.badgen.net/static/SpaceWarp%20Version/v1.9.5+)](https://github.com/SpaceWarpDev/SpaceWarp)
 [![License](https://flat.badgen.net/github/license/gamendegamer321/Commlines/)](https://github.com/gamendegamer321/Commlines/blob/master/LICENSE)
 
-> [!NOTE]
-> The tags used in this repository for version 1.2.0 and older are broken, and their releases are no longer available
-> GitHub.
-> Previous versions and the full changelog are still available
-> on [SpaceDock](https://spacedock.info/mod/3433/Commlines#changelog).
-
 # About CommLines
 
-[![image](Commlines-1690204648.png)](https://raw.githubusercontent.com/gamendegamer321/Commlines/refs/heads/main/Commlines-1690204648.png)
+[![image](https://raw.githubusercontent.com/gamendegamer321/Commlines/refs/heads/main/Commlines-1690204648.png)](https://raw.githubusercontent.com/gamendegamer321/Commlines/refs/heads/main/Commlines-1690204648.png)
 
 Adds the CommNet lines from KSP 1 to KSP 2. This will finally allow you to see the CommNet you have set up in KSP 2.
 
 # Installation
 
-> [!IMPORTANT]
-> **Required dependencies:**
-> - [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx) (v1.9.5+)
+**Required dependencies:**
+
+- [SpaceWarp](https://spacedock.info/mod/3277/Space%20Warp%20+%20BepInEx) (v1.9.5+)
 
 
-> [!TIP]
-> CKAN makes downloading, managing and updating mods easier. You can download CKAN
-> from [their GitHub](https://github.com/KSP-CKAN/CKAN).
-> CKAN can also automatically download the required dependencies when adding the mod.
+**Tip:**
+CKAN makes downloading, managing and updating mods easier. You can download CKAN
+from [their GitHub](https://github.com/KSP-CKAN/CKAN).
+CKAN can also automatically download the required dependencies when adding the mod.
 
-Download the release from the latest release from [GitHub](https://github.com/gamendegamer321/Commlines/releases/latest)
+**Manual installation:**
+
+Download the latest release from [GitHub](https://github.com/gamendegamer321/Commlines/releases/latest)
 or [SpaceDock](https://spacedock.info/mod/3433/Commlines).
 
 Open the downloaded zip file and copy the BepInEx folder to the KSP 2 root folder (<code>Kerbal Space Program 2</code>).
@@ -63,10 +59,9 @@ While in flight mode there is a button in the app bar. Pressing this button will
 in the same order as the different modes are listed above. This is an easier way to go through all the different modes
 and see the result than going into the settings menu. To make it quicker to toggle switch through the modes, the mod
 will try to keep the app tray open.
+The disabled or enabled indication next to the button can be ignored.
 
-> [!NOTE]
-> The disabled or enabled indication next to the button can be ignored.
-> Keep in mind, it will still take a few seconds for the lines to actually update!
+**Keep in mind, it will still take a few seconds for the lines to actually update!**
 
 ## Transmission speed
 
