@@ -11,7 +11,7 @@
 
 # About CommLines
 
-[![image](https://github.com/gamendegamer321/Commlines/blob/master/Commlines-1690204648.png)](https://github.com/gamendegamer321/Commlines/blob/master/Commlines-1690204648.png)
+[![image](Commlines-1690204648.png)](https://github.com/gamendegamer321/Commlines/blob/master/Commlines-1690204648.png)
 
 Adds the CommNet lines from KSP 1 to KSP 2. This will finally allow you to see the CommNet you have set up in KSP 2.
 
